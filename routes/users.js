@@ -12,4 +12,9 @@ router.post('/',function(req, res, next) {
   //Agrego el json a la base de datos
   res.sendStatus(201);
 });
+
+router.put('/[0-9]+',function(req, res, next) {
+  res.sendStatus(202);
+});
+
 module.exports = router;
