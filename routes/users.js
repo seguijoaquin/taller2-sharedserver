@@ -13,8 +13,20 @@ router.post('/',function(req, res, next) {
   res.sendStatus(201);
 });
 
+router.get('/[0-9]+',function(req, res, next) {
+  //Responde con el json del usuario
+});
+
 router.put('/[0-9]+',function(req, res, next) {
-  res.sendStatus(202);
+  res.sendStatus(200);
+});
+
+router.put('/[0-9]+/photo',function(req, res, next) {
+  res.sendStatus(200);
+});
+
+router.delete('/[0-9]+',function(req, res, next) {
+  res.sendStatus(200);
 });
 
 module.exports = router;
