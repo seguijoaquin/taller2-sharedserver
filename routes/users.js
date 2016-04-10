@@ -30,8 +30,8 @@ router.post('/',function(req, res, next) {
         console.log(err);
       } else {
         req.body.user.id = result.rows[0].id;
-        console.log(req.body.user);
-        res.status(201).json(req.body.user);
+        res.send(req.body.user);
+        res.sendStatus(201);
       }
     });
   });
