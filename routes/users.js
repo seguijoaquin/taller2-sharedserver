@@ -54,7 +54,7 @@ router.get('/[0-9]+',function(req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        return res.json(result.row[0]);
+        return res.json(result.rows[0]);
       }
     });
   });
