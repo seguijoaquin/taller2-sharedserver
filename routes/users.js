@@ -18,20 +18,20 @@ router.get('/', function(req, res, next) {
 router.post('/',function(req, res, next) {
   //TODO: Necesito chequear que la tabla de usuarios esta creada
   //TODO: Necesito chequear si ya existe el usuario a traves del mail
-  pg.connect(connectionString, function(err, client, done) {
+  pg.connect(urlDB, function(err, client, done) {
     if(err) {
       done();
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body],function(err, result) {
+    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body.user],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
       } else {
-        req.body.id = result.rows[0].id;
-        console.log(req.body);
-        res.status(201).json(req.body);
+        req.body.user.id = result.rows[0].id;
+        console.log(req.body.user);
+        res.status(201).json(req.body.user);
       }
     });
   });
