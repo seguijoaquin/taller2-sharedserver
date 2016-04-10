@@ -65,7 +65,7 @@ router.delete('/[0-9]+',function(req, res, next) {
   //TODO: Chequear si existe el usuario
 
   //Obtengo usr ID desde url
-  var usrID = req.originalUrl;
+  var usrID = req.url.substring(1);
   // Get a Postgres client from the connection pool
   pg.connect(urlDB, function(err, client, done) {
     if(err) {
@@ -73,7 +73,7 @@ router.delete('/[0-9]+',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("DELETE FROM users WHERE id($1)", [id],function(err, result) {
+    client.query("DELETE FROM users WHERE id = " + id,function(err, result) {
       done(); //Call done() to get the client back to the pool
       if (err) {
         console.log(err);
