@@ -73,7 +73,7 @@ router.delete('/[0-9]+',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("DELETE FROM users WHERE id($1)", [usrID],function(err, result) {
+    client.query("DELETE FROM users WHERE id = ($1)", [usrID],function(err, result) {
       done(); //Call done() to get the client back to the pool
       if (err) {
         console.log(err);
