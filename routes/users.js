@@ -30,7 +30,6 @@ router.post('/',function(req, res, next) {
         console.log(err);
       } else {
         req.body.user.id = result.rows[0].id;
-        res.send(req.body.user);
         res.sendStatus(201);
       }
     });
@@ -74,7 +73,7 @@ router.delete('/[0-9]+',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("DELETE FROM users WHERE id=($1)", [id],function(err, result) {
+    client.query("DELETE FROM users WHERE id($1)", [id],function(err, result) {
       done(); //Call done() to get the client back to the pool
       if (err) {
         console.log(err);
