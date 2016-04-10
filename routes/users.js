@@ -51,6 +51,7 @@ router.delete('/[0-9]+',function(req, res, next) {
 
 
 router.post('/profile', function (req, res, next) {
+  res.send('profile');
   console.log(req.body);
   res.json(req.body);
 });
