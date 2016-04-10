@@ -50,7 +50,7 @@ router.get('/[0-9]+',function(req, res, next) {
       return res.sendStatus(500);
     }
     client.query("SELECT * FROM users WHERE id = ($1)",[usrID],function(err, result) {
-      done(client); //Devuelvo el cliente al pool xq no necesito más la conexion
+      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
       } else {
