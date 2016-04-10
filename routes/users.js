@@ -24,14 +24,14 @@ router.post('/',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body.user],function(err, result) {
+    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
       } else {
-        req.body.user.id = result.rows[0].id;
-        console.log(req.body.user);
-        res.status(201).json(req.body.user);
+        req.body.id = result.rows[0].id;
+        console.log(req.body);
+        res.status(201).json(req.body);
       }
     });
   });
