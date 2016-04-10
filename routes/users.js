@@ -40,7 +40,25 @@ router.post('/',function(req, res, next) {
 //Recibe el id del usuario por url, parsea y busca
 //Devuelve un json con el usr
 router.get('/[0-9]+',function(req, res, next) {
-  //Responde con el json del usuario
+  //Obtengo usr ID desde url
+  var usrID = req.url.substring(1); //Substring después de la primer '/'
+  // Get a Postgres client from the connection pool
+  pg.connect(urlDB, function(err, client, done) {
+    if(err) {
+      done(); //Devuelvo el cliente al pool
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    client.query("SELECT * FROM users WHERE id = ($1)",[usrID],function(err, result) {
+      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+      if (err) {
+        console.log(err);
+      } else {
+        res.sendStatus(201);
+        return res.json(result);
+      }
+    });
+  });
 });
 
 //Modifica el perfil de un usuario
@@ -62,10 +80,10 @@ router.put('/[0-9]+/photo',function(req, res, next) {
 //Baja de usuario.
 //Recibe el id por url, lo parsea, busca el usuario y borra
 router.delete('/[0-9]+',function(req, res, next) {
-  //TODO: Chequear si existe el usuario
+  //TODO: Chequear si existe el usuario??
 
   //Obtengo usr ID desde url
-  var usrID = req.url.substring(1);
+  var usrID = req.url.substring(1); //Substring después de la primer '/'
   // Get a Postgres client from the connection pool
   pg.connect(urlDB, function(err, client, done) {
     if(err) {
