@@ -29,7 +29,6 @@ router.post('/',function(req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        req.body.user.id = result.rows[0].id;
         res.sendStatus(201);
       }
     });
