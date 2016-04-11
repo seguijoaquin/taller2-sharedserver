@@ -24,12 +24,26 @@ router.post('/',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("INSERT INTO users (data) values($1)",[req.body.user],function(err, result) {
-      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body.user],function(err, result) {
+      //done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
       } else {
-        res.sendStatus(201);
+        req.body.user.id = result.rows[0].id;
+        client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, req.body.user.id],function(err, result) {
+          done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+          if (err) {
+            console.log(err);
+          } else {
+            //Chequeo que la query devuelva un usuario
+            //En caso de que haya varios, devuelve el primero
+            if (result.rowCount) {
+              res.sendStatus(201);
+            } else {
+              res.sendStatus(418);
+            }
+          }
+        });
       }
     });
   });
