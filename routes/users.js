@@ -7,6 +7,32 @@ pg.defaults.ssl = true;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
+  // Get a Postgres client from the connection pool
+  pg.connect(urlDB, function(err, client, done) {
+    if(err) {
+      done(); //Devuelvo el cliente al pool
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    client.query("SELECT * FROM users",function(err, result) {
+      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+      if (err) {
+        console.log(err);
+      } else {
+        var rows = [];
+        query.on('row', function(row) {
+          //fired once for each row returned
+          rows.push(row);
+        });
+        query.on('end', function(result) {
+          //fired once and only once, after the last row has been returned and after all 'row' events are emitted
+          //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
+          console.log(result.rowCount + ' users were received');
+        })
+      }
+    });
+  });
+
   res.send('respond with a resource');
   //Leer la base de datos y devolver todo
 });
