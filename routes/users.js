@@ -55,6 +55,7 @@ router.get('/[0-9]+',function(req, res, next) {
         console.log(err);
       } else {
         //Chequeo que la query devuelva un usuario
+        //En caso de que haya varios, devuelve el primero
         if (result.rowCount) {
           return res.json(result.rows[0].data);
         } else {
@@ -68,7 +69,30 @@ router.get('/[0-9]+',function(req, res, next) {
 //Modifica el perfil de un usuario
 //Recibe un json con un usuario
 router.put('/[0-9]+',function(req, res, next) {
-  res.sendStatus(200);
+  //Obtengo usr ID desde url
+  var usrID = req.url.substring(1); //Substring después de la primer '/'
+  // Get a Postgres client from the connection pool
+  pg.connect(urlDB, function(err, client, done) {
+    if(err) {
+      done(); //Devuelvo el cliente al pool
+      console.log(err);
+      return res.sendStatus(500);
+    }
+    client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, usrID],function(err, result) {
+      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+      if (err) {
+        console.log(err);
+      } else {
+        //Chequeo que la query devuelva un usuario
+        //En caso de que haya varios, devuelve el primero
+        if (result.rowCount) {
+          res.sendStatus(200);
+        } else {
+          res.sendStatus(418);
+        }
+      }
+    });
+  });
 });
 
 /*Actualiza foto de perfil
@@ -85,7 +109,6 @@ router.put('/[0-9]+/photo',function(req, res, next) {
 //Recibe el id por url, lo parsea, busca el usuario y borra
 router.delete('/[0-9]+',function(req, res, next) {
   //TODO: Chequear si existe el usuario??
-
   //Obtengo usr ID desde url
   var usrID = req.url.substring(1); //Substring después de la primer '/'
   // Get a Postgres client from the connection pool
