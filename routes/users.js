@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("SELECT * FROM users",function(err, result) {
+    var query = client.query("SELECT * FROM users",function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
