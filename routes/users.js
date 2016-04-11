@@ -30,7 +30,9 @@ router.get('/', function(req, res, next) {
           console.log(result.rowCount + ' users were received');
           //TODO: DEVOLVER EL USER COUNT EN EL CAMPO DE METADATA
           var jsonObject = { "users" : [] , metadata : { version : 0.1 , count : result.rowCount}}
-          jsonObject.users.push(result.rows.data);
+          for (var i = 0; i < result.rowCount; i++) {
+            jsonObject.users.push(result.rows[i].data);
+          }
           return res.json(jsonObject);
           //return res.json({users : rows, metadata : { version : 0.1 , count : result.rowCount}});
         })
