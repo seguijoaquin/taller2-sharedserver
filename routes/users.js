@@ -19,7 +19,6 @@ router.get('/', function(req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        //var rows = [];
         query.on('row', function(row,result) {
           //fired once for each row returned
           result.addRow(row);
@@ -27,14 +26,11 @@ router.get('/', function(req, res, next) {
         query.on('end', function(result) {
           //fired once and only once, after the last row has been returned and after all 'row' events are emitted
           //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
-          console.log(result.rowCount + ' users were received');
-          //TODO: DEVOLVER EL USER COUNT EN EL CAMPO DE METADATA
           var jsonObject = { "users" : [] , metadata : { version : 0.1 , count : result.rowCount}}
           for (var i = 0; i < result.rowCount; i++) {
             jsonObject.users.push(result.rows[i].data);
           }
           return res.json(jsonObject);
-          //return res.json({users : rows, metadata : { version : 0.1 , count : result.rowCount}});
         })
       }
     });
