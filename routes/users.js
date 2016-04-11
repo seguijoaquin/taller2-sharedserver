@@ -65,7 +65,7 @@ router.get('/[0-9]+',function(req, res, next) {
         if (result.rowCount) {
           return res.json(result.rows[0].data);
         } else {
-          res.sendStatus(418);
+          res.sendStatus(404); //User not found
         }
       }
     });
@@ -78,27 +78,31 @@ router.put('/[0-9]+',function(req, res, next) {
   //Obtengo usr ID desde url
   var usrID = req.url.substring(1); //Substring después de la primer '/'
   // Get a Postgres client from the connection pool
-  pg.connect(urlDB, function(err, client, done) {
-    if(err) {
-      done(); //Devuelvo el cliente al pool
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, usrID],function(err, result) {
-      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
-      if (err) {
+  if (req.body.user.id == usrID) {
+    pg.connect(urlDB, function(err, client, done) {
+      if(err) {
+        done(); //Devuelvo el cliente al pool
         console.log(err);
-      } else {
-        //Chequeo que la query devuelva un usuario
-        //En caso de que haya varios, devuelve el primero
-        if (result.rowCount) {
-          res.sendStatus(200);
-        } else {
-          res.sendStatus(418);
-        }
+        return res.sendStatus(500);
       }
+      client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, usrID],function(err, result) {
+        done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+        if (err) {
+          console.log(err);
+        } else {
+          //Chequeo que la query devuelva un usuario
+          //En caso de que haya varios, devuelve el primero
+          if (result.rowCount) {
+            res.sendStatus(200);
+          } else {
+            res.sendStatus(418);
+          }
+        }
+      });
     });
-  });
+  } else {
+    res.sendStatus(418); // TODO: NO COINCIDE EL ID
+  }
 });
 
 /*Actualiza foto de perfil
