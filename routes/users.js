@@ -54,10 +54,11 @@ router.get('/[0-9]+',function(req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        if (result) {
+        //Chequeo que la query devuelva un usuario
+        if (result.rowCount) {
           return res.json(result.rows[0].data);
         } else {
-          return res.sendStatus(418);
+          res.sendStatus(418);
         }
       }
     });
