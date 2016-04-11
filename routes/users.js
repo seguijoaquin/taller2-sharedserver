@@ -29,7 +29,10 @@ router.get('/', function(req, res, next) {
           //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
           console.log(result.rowCount + ' users were received');
           //TODO: DEVOLVER EL USER COUNT EN EL CAMPO DE METADATA
-          return res.json({users : {rows}, metadata : { version : 0.1 , count : result.rowCount}});
+          var jsonObject = { "users" : [] , metadata : { version : 0.1 , count : result.rowCount}}
+          jsonObject.users.push(rows);
+          return res.json(jsonObject);
+          //return res.json({users : rows, metadata : { version : 0.1 , count : result.rowCount}});
         })
       }
     });
