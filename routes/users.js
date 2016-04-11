@@ -24,7 +24,7 @@ router.post('/',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body.user],function(err, result) {
+    client.query("INSERT INTO users (data) values($1)",[req.body.user],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
