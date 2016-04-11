@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    var query = client.query("SELECT * FROM users",function(err, result) {
+    var query = client.query("SELECT * FROM users",function(err, res) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
@@ -24,17 +24,15 @@ router.get('/', function(req, res, next) {
           //fired once for each row returned
           rows.push(row);
         });
-        query.on('end', function(result) {
+        query.on('end', function(res) {
           //fired once and only once, after the last row has been returned and after all 'row' events are emitted
           //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
-          console.log(result.rowCount + ' users were received');
+          console.log(res.rowCount + ' users were received');
+          return res.json(rows);
         })
       }
     });
   });
-
-  res.send('respond with a resource');
-  //Leer la base de datos y devolver todo
 });
 
 //Alta de usuario
