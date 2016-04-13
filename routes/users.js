@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var urlDB = process.env.DATABASE_URL;
+//var urlDB = process.env.DATABASE_URL;
+var urlDB = "postgres://tqezweoinbznuw:8DX2r1Jt6SuzmPlqyRoEUwSQKr@ec2-54-221-249-201.compute-1.amazonaws.com:5432/d1h0hefo2t4jcr"
 pg.defaults.ssl = true;
 
 /* GET users listing. */
