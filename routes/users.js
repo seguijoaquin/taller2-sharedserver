@@ -116,13 +116,7 @@ router.put('/[0-9]+',function(req, res, next) {
         if (err) {
           console.log(err);
         } else {
-          //Chequeo que la query devuelva un usuario
-          //En caso de que haya varios, devuelve el primero
-          if (result.rowCount) {
-            res.sendStatus(200);
-          } else {
-            res.sendStatus(418);
-          }
+          res.sendStatus(200);
         }
       });
     });
