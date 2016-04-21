@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    var query = client.query("SELECT * FROM users",function(err, result) {
+    var query = client.query("SELECT * FROM usuarios",function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
@@ -29,7 +29,18 @@ router.get('/', function(req, res, next) {
           //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
           var jsonObject = { "users" : [] , metadata : { version : 0.1 , count : result.rowCount}}
           for (var i = 0; i < result.rowCount; i++) {
-            jsonObject.users.push(result.rows[i].data);
+            var oneUser = {
+              user : {
+                name : result.rows[i].name,
+                alias : result.rows[i].alias,
+                email : result.rows[i].mail,
+                location : {
+                  latitude : result.rows[i].latitude,
+                  longitude : result.rows[i].longitude
+                }
+              }
+            }
+            jsonObject.users.push(oneUser);
           }
           return res.json(jsonObject);
         })
@@ -51,19 +62,16 @@ router.post('/',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("INSERT INTO users (data) values($1) RETURNING id",[req.body.user],function(err, result) {
+    //client.query("CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, name VARCHAR(40), mail VARCHAR(40), alias VARCHAR(40), latitude REAL, longitude REAL)");
+    client.query("INSERT INTO usuarios (name,mail,alias,latitude,longitude) values($1,$2,$3,$4,$5) RETURNING id",
+    [req.body.user.name,req.body.user.email,req.body.user.alias,req.body.user.location.latitude,req.body.user.location.longitude],function(err, result) {
+      done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
       } else {
-        req.body.user.id = result.rows[0].id;
-        client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, req.body.user.id],function(err, result) {
-          done(); //Devuelvo el cliente al pool xq no necesito más la conexion
-          if (err) {
-            console.log(err);
-          } else {
-            res.sendStatus(201);
-          }
-        });
+        var jsonObject = { user : req.body.user, metadata : 1.0}
+        res.status(201).json(jsonObject);
+        res.end();
       }
     });
   });
@@ -82,7 +90,7 @@ router.get('/[0-9]+',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("SELECT * FROM users WHERE id = ($1)",[usrID],function(err, result) {
+    client.query("SELECT * FROM usuarios WHERE id = ($1)",[usrID],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         console.log(err);
@@ -90,7 +98,22 @@ router.get('/[0-9]+',function(req, res, next) {
         //Chequeo que la query devuelva un usuario
         //En caso de que haya varios, devuelve el primero
         if (result.rowCount) {
-          return res.json(result.rows[0].data);
+          var jsonObject = {
+            user : {
+              id : usrID,
+              name : result.rows[0].name,
+              alias : result.rows[0].alias,
+              email : result.rows[0].mail,
+              location : {
+                latitude : result.rows[0].latitude,
+                longitude : result.rows[0].longitude
+              }
+            },
+            metadata : {
+              version : 1.0
+            }
+          }
+          return res.json(jsonObject);
         } else {
           res.sendStatus(404); //User not found
         }
@@ -112,7 +135,8 @@ router.put('/[0-9]+',function(req, res, next) {
         console.log(err);
         return res.sendStatus(500);
       }
-      client.query("UPDATE users SET data = ($1) WHERE id = ($2)", [req.body.user, usrID],function(err, result) {
+      client.query("UPDATE usuarios SET name = ($1), mail = ($2), alias = ($3), latitude = ($4), longitude = ($5) WHERE id = ($6)",
+      [req.body.user.name, req.body.user.email, req.body.user.alias, req.body.user.location.latitude, req.body.user.location.longitude, usrID],function(err, result) {
         done(); //Devuelvo el cliente al pool xq no necesito más la conexion
         if (err) {
           console.log(err);
@@ -149,11 +173,14 @@ router.delete('/[0-9]+',function(req, res, next) {
       console.log(err);
       return res.sendStatus(500);
     }
-    client.query("DELETE FROM users WHERE id = ($1)", [usrID],function(err, result) {
+    client.query("DELETE FROM usuarios WHERE id = ($1)", [usrID],function(err, result) {
       done(); //Call done() to get the client back to the pool
       if (err) {
         console.log(err);
       } else {
+        
+        // TODO: verificar si se elimino el usuario o no.
+
         res.sendStatus(200);
       }
     });

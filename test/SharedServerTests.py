@@ -31,7 +31,7 @@ class TestAltaBajaYModificacionDeUsuarios(unittest.TestCase):
     def test_elAltaDeUnUsuarioConCamposCorrectosDeberiaDarStatusCode201(self):
         user ={
             "user":{
-                "name":"Diegasdo",
+                "name":"Diego",
                 "alias":"diego3",
                 "email":"usuarioasd@usuario.com",
                 "photo_profile":"< base_64 >",
@@ -61,7 +61,10 @@ class TestAltaBajaYModificacionDeUsuarios(unittest.TestCase):
         self.assertEqual(request.status_code, 201)
 
 
+    def test_delete(self):
 
+        request = requests.delete('http://localhost:'+str(self.port)+'/users/5')
+        self.assertEqual(request.status_code,200)
 
 
 
