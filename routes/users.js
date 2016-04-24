@@ -1,17 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+var Constants = require('./constants.js');
 
 //var urlDB = process.env.DATABASE_URL;
-var urlDB = "postgres://tqezweoinbznuw:8DX2r1Jt6SuzmPlqyRoEUwSQKr@ec2-54-221-249-201.compute-1.amazonaws.com:5432/d1h0hefo2t4jcr"
+var urlDB = Constants.POSTGRE_URL_DB;
+
 pg.defaults.ssl = true;
 
 
 
 function handleQueryError(err,res){
   //La tabla no existe.
-  if (err.code == '42P01'){
-    console.log("[ERROR: La tabla consultada es inexistente.]");
+  if (err.code == Constants.CODE_TABLA_INEXISTENTE){
+    console.log(Constants.ERROR_MSG_DB_TABLA_INEXISTENTE);
     res.status(400);
     res.end();
   }
@@ -22,7 +24,7 @@ function handleQueryError(err,res){
 
 function handlePgConnectError(err,res,done){
     done(); //Devuelvo el cliente al pool
-    console.log("[ERROR: No se pudo realizar la conexion a la base de datos]");
+    console.log(Constants.ERROR_MSG_PG_CONNECT);
     console.log(err);
     return res.sendStatus(500);
 }
@@ -32,9 +34,9 @@ function handlePgConnectError(err,res,done){
 
 
 
-
+//Listado de usuarios
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get(Constants.DIR_LISTADO_USUARIOS, function(req, res, next) {
   // Get a Postgres client from the connection pool
   pg.connect(urlDB, function(err, client, done) {
 
@@ -42,7 +44,7 @@ router.get('/', function(req, res, next) {
       return handlePgConnectError(err,res,done);
     }
 
-    var query = client.query("SELECT * FROM usuarios",function(err, result) {
+    var query = client.query(Constants.UERY_LISTADO_USUARIOS,function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         handleQueryError(err,res);
@@ -80,7 +82,7 @@ router.get('/', function(req, res, next) {
 // El objeto json viene con id null, se le asigna id al hacer insert
 // obteniendo el nro con su primal key
 //Devuelve http 201
-router.post('/',function(req, res, next) {
+router.post(Constants.DIR_ALTA_USUARIOS,function(req, res, next) {
   //TODO: Necesito chequear que la tabla de usuarios esta creada
   //TODO: Necesito chequear si ya existe el usuario a traves del mail
   pg.connect(urlDB, function(err, client, done) {
@@ -90,7 +92,7 @@ router.post('/',function(req, res, next) {
     }
 
     //client.query("CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, name VARCHAR(40), mail VARCHAR(40), alias VARCHAR(40), latitude REAL, longitude REAL)");
-    client.query("INSERT INTO usuarios (name,mail,alias,latitude,longitude) values($1,$2,$3,$4,$5) RETURNING id",
+    client.query(Constants.QUERY_ALTA_USUARIO,
     [req.body.user.name,req.body.user.email,req.body.user.alias,req.body.user.location.latitude,req.body.user.location.longitude],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
 
@@ -109,7 +111,7 @@ router.post('/',function(req, res, next) {
 //Consulta perfil de usuario
 //Recibe el id del usuario por url, parsea y busca
 //Devuelve un json con el usr
-router.get('/[0-9]+',function(req, res, next) {
+router.get(Constants.DIR_CONSULTA_PERFIL_USUARIO,function(req, res, next) {
   //Obtengo usr ID desde url
   var usrID = req.url.substring(1); //Substring después de la primer '/'
   // Get a Postgres client from the connection pool
@@ -119,7 +121,7 @@ router.get('/[0-9]+',function(req, res, next) {
       return handlePgConectError(err,res,done);
     }
 
-    client.query("SELECT * FROM usuarios WHERE id = ($1)",[usrID],function(err, result) {
+    client.query(Constants.QUERY_CONSULTA_PERFIL_USUARIO ,[usrID],function(err, result) {
       done(); //Devuelvo el cliente al pool xq no necesito más la conexion
       if (err) {
         handleQueryError(err,res);
@@ -153,7 +155,7 @@ router.get('/[0-9]+',function(req, res, next) {
 
 //Modifica el perfil de un usuario
 //Recibe un json con un usuario
-router.put('/[0-9]+',function(req, res, next) {
+router.put(Constants.DIR_MODIFICACION_PERFIL_USUARIOS,function(req, res, next) {
   //Obtengo usr ID desde url
   var usrID = req.url.substring(1); //Substring después de la primer '/'
   // Get a Postgres client from the connection pool
@@ -164,7 +166,7 @@ router.put('/[0-9]+',function(req, res, next) {
         return handlePgConnectError(err,res,done);
       }
 
-      client.query("UPDATE usuarios SET name = ($1), mail = ($2), alias = ($3), latitude = ($4), longitude = ($5) WHERE id = ($6)",
+      client.query(Constants.QUERY_MODIFICACION_PERFIL_USUARIO,
       [req.body.user.name, req.body.user.email, req.body.user.alias, req.body.user.location.latitude, req.body.user.location.longitude, usrID],function(err, result) {
         done(); //Devuelvo el cliente al pool xq no necesito más la conexion
         if (err) {
@@ -179,19 +181,22 @@ router.put('/[0-9]+',function(req, res, next) {
   }
 });
 
+
+
+
 /*Actualiza foto de perfil
 Parametros recibidos:
 {
 "photo": “base_64”
 }
 */
-router.put('/[0-9]+/photo',function(req, res, next) {
+router.put(Constants.DIR_ACTUALIZA_FOTO_PERFIL,function(req, res, next) {
   res.sendStatus(200);
 });
 
 //Baja de usuario.
 //Recibe el id por url, lo parsea, busca el usuario y borra
-router.delete('/[0-9]+',function(req, res, next) {
+router.delete(Constants.DIR_BAJA_DE_USUARIOS,function(req, res, next) {
   //TODO: Chequear si existe el usuario??
   //Obtengo usr ID desde url
   var usrID = req.url.substring(1); //Substring después de la primer '/'
@@ -201,7 +206,7 @@ router.delete('/[0-9]+',function(req, res, next) {
       return handlePgConectError(err,res,done);
     }
 
-    client.query("DELETE FROM usuarios WHERE id = ($1)", [usrID],function(err, result) {
+    client.query(Constants.QUERY_BAJA_DE_USUARIO, [usrID],function(err, result) {
       done(); //Call done() to get the client back to the pool
       if (err) {
         handleQueryError(err,res);
