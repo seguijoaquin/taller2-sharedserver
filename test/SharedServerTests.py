@@ -66,6 +66,10 @@ class TestAltaBajaYModificacionDeUsuarios(unittest.TestCase):
         request = requests.delete('http://localhost:'+str(self.port)+'/users/5')
         self.assertEqual(request.status_code,200)
 
+    def test_getUsuarios(self):
+        request = requests.get(self.URI + '/users')
+        self.assertEqual(request.status_code,200)
+
 
 
 if __name__ == '__main__':
