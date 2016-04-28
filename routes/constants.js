@@ -3,6 +3,8 @@ module.exports = Object.freeze({
 
     POSTGRE_URL_DB: "postgres://tqezweoinbznuw:8DX2r1Jt6SuzmPlqyRoEUwSQKr@ec2-54-221-249-201.compute-1.amazonaws.com:5432/d1h0hefo2t4jcr",
 
+    //----------------------------- METADATA ---------------------------------------
+    METADATA_VERSION : "0.1"
 
     //----------------------------- ERRORES ---------------------------------------
 
