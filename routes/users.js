@@ -152,7 +152,7 @@ router.put('/[0-9]+',function(req, res, next) {
       capturarErrorConnect(err,res,done);
       client.query(Constants.QUERY_MODIFICACION_PERFIL_USUARIO,
       [req.body.user.name, req.body.user.email, req.body.user.alias, req.body.user.location.latitude, req.body.user.location.longitude, usrID],
-      queryExitosa (err, result, res, done););
+      queryExitosa (err, result, res, done));
     });
   } else {
     res.sendStatus(418); // TODO: NO COINCIDE EL ID
@@ -178,7 +178,7 @@ router.delete('/[0-9]+',function(req, res, next) {
   var usrID = req.url.substring(1); //Substring después de la primer '/'
   pg.connect(urlDB, function(err, client, done) {
     capturarErrorConnect(err,res,done);
-    client.query(Constants.QUERY_BAJA_DE_USUARIO, [usrID], queryExitosa(err, result, res, done););
+    client.query(Constants.QUERY_BAJA_DE_USUARIO, [usrID], queryExitosa(err, result, res, done));
   });
 });
 
