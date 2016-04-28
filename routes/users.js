@@ -72,6 +72,8 @@ function validarUsuario(req,res) {
     return true;
   } else {
     console.log(Constants.ERROR_MSG_INVALID_USER);
+    res.sendStatus(418); //TODO: DEVOLVER INVALID USER
+    res.end();
     return false;
   }
 }
