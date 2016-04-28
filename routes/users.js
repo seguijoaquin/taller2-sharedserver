@@ -14,6 +14,7 @@ function query(text, values, cb) {
     if(err){
       return handlePgConnectError(err,res,done);
     }
+
     //Realizo la consulta en text con los parametros values
     client.query(text, values, function(err, result) {
       done();
@@ -53,7 +54,7 @@ router.get(Constants.DIR_LISTADO_USUARIOS, function(req, res, next) {
       query.on('end', function(result) {
         //fired once and only once, after the last row has been returned and after all 'row' events are emitted
         //in this example, the 'rows' array now contains an ordered set of all the rows which we received from postgres
-        var jsonObject = { "users" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
+        var jsonObject = { "users" : [] , metadata : { version : 0.1 , count : result.rowCount}}
         for (var i = 0; i < result.rowCount; i++) {
           var oneUser = {
             user : {
@@ -84,7 +85,7 @@ router.post(Constants.DIR_ALTA_USUARIOS,function(req, res, next) {
 
   query(Constants.QUERY_ALTA_USUARIO, [req.body.user.name,req.body.user.email,req.body.user.alias,req.body.user.location.latitude, req.body.user.location.longitude],
     function(err,result){
-      var jsonObject = { user : req.body.user, metadata : Constants.METADATA_VERSION};
+      var jsonObject = { user : req.body.user, metadata : 1.0};
       res.status(201).json(jsonObject);
       res.end();
       }
@@ -115,7 +116,7 @@ router.get(Constants.DIR_CONSULTA_PERFIL_USUARIO,function(req, res, next) {
             }
           },
           metadata : {
-            version : Constants.METADATA_VERSION
+            version : 1.0
           }
         }
         return res.json(jsonObject);
