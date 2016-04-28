@@ -68,7 +68,7 @@ function queryExitosa (err, result, res, done) {
 }
 
 function validarUsuario(req,res) {
-  if (req.body.user.name && req.body.user.mail) {
+  if (req.body.user.name && req.body.user.email && req.body.user.alias && req.body.user.location.latitude && req.body.user.location.longitude) {
     return true;
   } else {
     console.log(Constants.ERROR_MSG_INVALID_USER);
