@@ -14,6 +14,8 @@ module.exports = Object.freeze({
 
     CODE_TABLA_INEXISTENTE: '42P01',
 
+    ERROR_MSG_INVALID_USER: "[ERROR: El usuario es invalido]",
+
 
 
     // ---------------------------- QUERYS ----------------------------------------
