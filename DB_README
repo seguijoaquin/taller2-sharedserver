@@ -23,7 +23,7 @@ users_interests:
 
 > CREATE TABLE locations (
 	id_location SERIAL PRIMARY KEY,
-	id_user INTEGER NOT NULL REFERENCES users(id_user),
+	id_user INTEGER PRIMARY KEY REFERENCES users(id_user) ON DELETE CASCADE,
 	latitude REAL,
 	longitude REAL
 	);
@@ -32,15 +32,15 @@ users_interests:
 
 > CREATE TABLE interests (
 	id_interest SERIAL PRIMARY KEY,
-	name VARCHAR(20)
+	name VARCHAR(20) PRIMARY KEY
 	);
 
 ## Se define la tabla users_interests
 
 > CREATE TABLE users_interests (
 	id_usr_int SERIAL PRIMARY KEY,
-	id_user INTEGER NOT NULL REFERENCES users(id_user),
-	id_interest INTEGER NOT NULL REFERENCES interests(id_interest),
+	id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
+	id_interest INTEGER NOT NULL REFERENCES interests(id_interest) ON DELETE CASCADE,
 	value VARCHAR(40)
 	);
 
@@ -49,7 +49,6 @@ users_interests:
 
 > CREATE TABLE pictures (
 	id_picture SERIAL PRIMARY KEY,
-	id_user INTEGER NOT NULL REFERENCES users(id_user),
+	id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
 	pic TEXT
 	);
-
