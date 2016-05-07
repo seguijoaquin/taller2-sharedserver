@@ -22,11 +22,11 @@ module.exports = Object.freeze({
 
     QUERY_LISTADO_USUARIOS: "SELECT * FROM usuarios",
 
-    QUERY_ALTA_USUARIO: "INSERT INTO usuarios (name,mail,alias,latitude,longitude) values($1,$2,$3,$4,$5) RETURNING id",
+    QUERY_ALTA_USUARIO: "INSERT INTO usuarios (name,email,alias,latitude,longitude) values($1,$2,$3,$4,$5) RETURNING id",
 
     QUERY_CONSULTA_PERFIL_USUARIO: "SELECT * FROM usuarios WHERE id = ($1)",
 
-    QUERY_MODIFICACION_PERFIL_USUARIO: "UPDATE usuarios SET name = ($1), mail = ($2), alias = ($3), latitude = ($4), longitude = ($5) WHERE id = ($6)",
+    QUERY_MODIFICACION_PERFIL_USUARIO: "UPDATE usuarios SET name = ($1), email = ($2), alias = ($3), latitude = ($4), longitude = ($5) WHERE id = ($6)",
 
     QUERY_BAJA_DE_USUARIO: "DELETE FROM usuarios WHERE id = ($1)",
 
