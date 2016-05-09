@@ -16,11 +16,22 @@ App connected to this repository.
 Automatically deploys from master. 
 Every push to master will deploy a new version of this app, deploys happen automatically
 
-Para linkear la carpeta del repositorio a la app de heroku:
+Link repository to heroku app:
+-----------------------------
 
 `$ git remote add heroku git@heroku.com:t2shared.git`
 
 `$ heroku git:remote -a t2shared`
+
+Run the app locally
+-------------------
+First, install all the dependencies locally
+`$ npm install` 
+
+Then run
+`$ node ./bin/www`
+
+The app should be running on localhost:5000
 
 ### PostgreSQL
 
