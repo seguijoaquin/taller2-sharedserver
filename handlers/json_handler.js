@@ -1,6 +1,8 @@
 var Constants = require('../constants/constants.js');
 
-function armarJsonListaUsuarios(result) {
+var json_handler = {}
+
+json_handler.armarJsonListaUsuarios = function(result) {
   var jsonObject = { "users" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneUser = {
@@ -21,12 +23,12 @@ function armarJsonListaUsuarios(result) {
   return jsonObject;
 }
 
-function armarJsonUsuarioNuevo (req) {
+json_handler.armarJsonUsuarioNuevo = function(req) {
   var respuesta = { user : req.body.user, metadata : Constants.METADATA_VERSION}
   return respuesta;
 }
 
-function armarJsonUsuarioConsultado (result, usrID) {
+json_handler.armarJsonUsuarioConsultado = function (result, usrID) {
   var jsonObject = {
     user : {
       id : usrID,
@@ -44,5 +46,6 @@ function armarJsonUsuarioConsultado (result, usrID) {
   }
   return jsonObject;
 }
+
 
 module.exports = json_handler;
