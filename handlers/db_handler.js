@@ -1,11 +1,14 @@
 var pg = require('pg');
 var Constants = require('../constants/constants.js');
+var json_handler = require('./json_handler');
 
 var urlDB = Constants.POSTGRE_URL_DB;
 
 pg.defaults.ssl = true;
 
-function atenderQuery(req, res, next) {
+var db_handler = {}
+
+db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
     if (err) {
       capturarErrorConnect(err,res,done);
@@ -16,7 +19,7 @@ function atenderQuery(req, res, next) {
   });
 };
 
-function getUsers(req, res, client, done) {
+db_handler.getUsers = function (req, res, client, done) {
   //TODO: JOIN con tabla de users_interests
   var query = client.query("SELECT * FROM users",function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
@@ -34,12 +37,12 @@ function getUsers(req, res, client, done) {
 }
 
 //Error 500 al querer conectarse a la base de datos
-function capturarErrorConnect(err, res, done) {
+db_handler.capturarErrorConnect = function (err, res, done) {
     done(); //Ante error de connect, devuelvo el client al pool
     res.status(500).json({error: err});
 }
 
-function queryExitosa (err, result, res, done) {
+db_handler.queryExitosa = function (err, result, res, done) {
   done(); //Devuelvo el cliente al pool xq no necesito más la conexion
   if (err) {
     res.status(500).json({error: err});
