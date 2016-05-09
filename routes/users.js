@@ -3,7 +3,7 @@ var router = express.Router();
 var pg = require('pg');
 var Constants = require('../constants/constants.js');
 var json_handler = require('../handlers/json_handler.js');
-var Callback = require('../handlers/cb_handler.js');
+var cb_handler = require('../handlers/cb_handler.js');
 var db_handler = require('../handlers/db_handler.js');
 
 var urlDB = Constants.POSTGRE_URL_DB;
