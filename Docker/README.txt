@@ -1,3 +1,10 @@
+#La imagen esta en:
+
+diegofk26/shared-server-docker
+
+
+
+
 #Para buildear la imagen correr el script build.sh:
 
 $sh ./build.sh
