@@ -23,7 +23,8 @@ json_handler.armarJsonListaUsuarios = function(result) {
   return jsonObject;
 }
 
-json_handler.armarJsonUsuarioNuevo = function(req) {
+json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
+  req.body.user.id = id_user;
   var respuesta = { user : req.body.user, metadata : Constants.METADATA_VERSION}
   return respuesta;
 }
