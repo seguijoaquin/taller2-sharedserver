@@ -37,9 +37,10 @@ db_handler.getUsers = function (req, res, client, done) {
 }
 
 db_handler.addUser = function (req, res, client, done) {
+  var photo_profile = "no_photo";
   var query = client.query("INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
     [req.body.user.name,req.body.user.email,req.body.user.alias,req.body.user.sex,
-      req.body.user.location.latitude,req.body.user.location.longitude,"BLABLABLALBLA"],function(err, result) {
+      req.body.user.location.latitude,req.body.user.location.longitude,photo_profile],function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
     if (err) {
       console.log(err);
@@ -52,10 +53,13 @@ db_handler.addUser = function (req, res, client, done) {
   });
 }
 
+//Pisa todos los valores que estan en la query
+//Si en el json no existen los campos, pone null
+//Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
-  var query = client.query("UPDATE users SET name = ($1), email = ($2), alias = ($3), sex = ($4) latitude = ($5), longitude = ($6), photo_profile = ($7) WHERE id_user = ($8)",
+  var query = client.query("UPDATE users SET name = ($1), email = ($2), alias = ($3), sex = ($4), latitude = ($5), longitude = ($6) WHERE id_user = ($7)",
     [req.body.user.name, req.body.user.email, req.body.user.alias,
-      req.body.user.sex, req.body.user.location.latitude, req.body.user.location.longitude,"BLABLABLALBLA", usrID],
+      req.body.user.sex, req.body.user.location.latitude,req.body.user.location.longitude, usrID],
     function (err,result) {
       db_handler.queryExitosa (err, result, res, done);
     });
@@ -70,7 +74,7 @@ db_handler.getUser = function (res, usrID, client, done) {
       res.sendStatus(404).end();
     } else {
       if (result.rowCount) {
-        var jsonObject = json_handler.armarJsonUsuarioConsultado(result,usrID);
+        var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
         return res.json(jsonObject);
       } else {
         //No se por que nunca entra aca si hago una query con un id invalido!

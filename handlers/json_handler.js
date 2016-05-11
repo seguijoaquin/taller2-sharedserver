@@ -25,15 +25,28 @@ json_handler.armarJsonListaUsuarios = function(result) {
 }
 
 json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
-  req.body.user.id = id_user;
-  var respuesta = { user : req.body.user, metadata : Constants.METADATA_VERSION}
-  return respuesta;
-}
-
-json_handler.armarJsonUsuarioConsultado = function (result, usrID) {
   var jsonObject = {
     user : {
-      id : usrID,
+      id : id_user,
+      name : req.body.user.name,
+      alias : req.body.user.alias,
+      email : req.body.user.email,
+      sex : req.body.user.sex,
+      location : {
+        latitude : req.body.user.location.latitude,
+        longitude : req.body.user.location.longitude
+      }
+    },
+    metadata : {
+      version : Constants.METADATA_VERSION
+    }
+  }
+  return jsonObject;
+}
+
+json_handler.armarJsonUsuarioConsultado = function (result) {
+  var jsonObject = {
+    user : {
       name : result.rows[0].name,
       alias : result.rows[0].alias,
       email : result.rows[0].email,
