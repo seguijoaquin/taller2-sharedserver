@@ -15,3 +15,7 @@ cd routes
 #Cambiar SSL en users.js
 cd ../routes/
 sed -i.bak "s-pg\.defaults\.ssl =.*-//pg\.defaults\.ssl = true;-g" users.js
+
+#instalo lo de npm
+
+npm install
