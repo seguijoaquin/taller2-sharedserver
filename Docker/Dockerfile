@@ -16,5 +16,3 @@ sudo apt-get install -y npm;\
 cd home/taller2-sharedserver/;\
 
 cd /home/taller2-sharedserver/localconfig;\
-
-sh ./configure.sh;\
