@@ -10,6 +10,7 @@ json_handler.armarJsonListaUsuarios = function(result) {
         name : result.rows[i].name,
         alias : result.rows[i].alias,
         email : result.rows[i].email,
+        sex : result.rows[i].sex,
         photo_profile: result.rows[i].photo_profile,
         interests: [],
         location : {
@@ -36,6 +37,7 @@ json_handler.armarJsonUsuarioConsultado = function (result, usrID) {
       name : result.rows[0].name,
       alias : result.rows[0].alias,
       email : result.rows[0].email,
+      sex : result.rows[0].sex,
       location : {
         latitude : result.rows[0].latitude,
         longitude : result.rows[0].longitude
