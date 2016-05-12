@@ -12,6 +12,7 @@ db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
     if (err) {
       db_handler.capturarErrorConnect(err,res,done);
+      return false;
     } else {
       next.set_ClientDone(client,done);
       next.launch();
@@ -39,16 +40,24 @@ db_handler.getUsers = function (req, res, usrID, client, done) {
 db_handler.addUser = function (req, res, usrID, client, done) {
   var photo_profile = "no_photo";
   var u = req.body.user;
-  var query = client.query("INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
-    [u.name,u.email,u.alias,u.sex,u.location.latitude,u.location.longitude,photo_profile],function(err, result) {
-    done(); //Devuelvo el cliente al pool xq no necesito más la conexion
-    if (err) {
-      console.log(err);
-      res.status(500).json({error: err}).end();
+  var check_query = client.query("SELECT * FROM users WHERE email = ($1)",[u.email],function (err, result_check) {
+    if(result_check.rowCount > 0) {
+      done();
+      console.log("YA EXISTE MAIL");
+      res.status(418).json({error: "Ya existe mail"}).end();
     } else {
-      var id_user = result.rows[0].id_user;
-      var jsonObject = json_handler.armarJsonUsuarioNuevo(req,id_user);
-      res.status(201).json(jsonObject).end();
+      var query = client.query("INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
+        [u.name,u.email,u.alias,u.sex,u.location.latitude,u.location.longitude,photo_profile],function(err, result) {
+        done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+        if (err) {
+          console.log(err);
+          res.status(500).json({error: err}).end();
+        } else {
+          var id_user = result.rows[0].id_user;
+          var jsonObject = json_handler.armarJsonUsuarioNuevo(req,id_user);
+          res.status(201).json(jsonObject).end();
+        }
+      });
     }
   });
 }
@@ -88,6 +97,7 @@ db_handler.deleteUser = function (req, res, usrID, client, done) {
   var query = client.query("DELETE FROM users WHERE id_user = ($1)",[usrID],function (err, result) {
     db_handler.queryExitosa(err,result,res, done);
   });
+  return false;
 }
 
 

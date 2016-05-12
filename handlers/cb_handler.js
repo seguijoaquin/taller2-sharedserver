@@ -15,13 +15,13 @@ function cb_handler(req, res, usrID, next) {
    * Se llama inmediatamente despues de que se hace un connect con la DB
   */
   function set_ClientDone(client,done) {
-    my_client = client
-    my_done = done
+    my_client = client;
+    my_done = done;
   }
 
   function launch() {
-    console.log('launching...')
-    my_next(my_req, my_res, my_usrID, my_client, my_done)
+    console.log('launching...');
+    my_next(my_req, my_res, my_usrID, my_client, my_done);
   }
 
   return {
