@@ -19,7 +19,7 @@ db_handler.atenderQuery = function (req, res, next) {
   });
 };
 
-db_handler.getUsers = function (req, res, client, done) {
+db_handler.getUsers = function (req, res, usrID, client, done) {
   //TODO: JOIN con tabla de users_interests
   var query = client.query("SELECT * FROM users",function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
@@ -36,11 +36,11 @@ db_handler.getUsers = function (req, res, client, done) {
   });
 }
 
-db_handler.addUser = function (req, res, client, done) {
+db_handler.addUser = function (req, res, usrID, client, done) {
   var photo_profile = "no_photo";
+  var u = req.body.user;
   var query = client.query("INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
-    [req.body.user.name,req.body.user.email,req.body.user.alias,req.body.user.sex,
-      req.body.user.location.latitude,req.body.user.location.longitude,photo_profile],function(err, result) {
+    [u.name,u.email,u.alias,u.sex,u.location.latitude,u.location.longitude,photo_profile],function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
     if (err) {
       console.log(err);
@@ -65,7 +65,7 @@ db_handler.modifyUser = function(req, res, usrID, client, done) {
     });
 }
 
-db_handler.getUser = function (res, usrID, client, done) {
+db_handler.getUser = function (req, res, usrID, client, done) {
   var query = client.query("SELECT * FROM users WHERE id_user = ($1)",[usrID],function (err,result) {
     done();
     //Si tiro un id que no existe, la query falla y entra por aca
@@ -84,7 +84,7 @@ db_handler.getUser = function (res, usrID, client, done) {
   })
 }
 
-db_handler.deleteUser = function (res, usrID, client, done) {
+db_handler.deleteUser = function (req, res, usrID, client, done) {
   var query = client.query("DELETE FROM users WHERE id_user = ($1)",[usrID],function (err, result) {
     db_handler.queryExitosa(err,result,res, done);
   });

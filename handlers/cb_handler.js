@@ -1,7 +1,8 @@
-function cb_handler(req, res, next) {
+function cb_handler(req, res, usrID, next) {
   var my_req = req;
   var my_res = res;
   var my_next = next;
+  var my_usrID = usrID;
   /*
    * Al querer armar la funcion de callback a llamar, no estamos conectados
    * a la base de datos, por lo que no tenemos el cliente seteado todavía
@@ -20,12 +21,13 @@ function cb_handler(req, res, next) {
 
   function launch() {
     console.log('launching...')
-    my_next(my_req, my_res, my_client, my_done)
+    my_next(my_req, my_res, my_usrID, my_client, my_done)
   }
 
   return {
     req: my_req,
     res: my_res,
+    usrID: my_usrID,
     next: my_next,
     client: my_client,
     done: my_done,
