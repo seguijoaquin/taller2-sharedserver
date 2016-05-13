@@ -3,7 +3,6 @@ var Constants = require('../constants/constants.js');
 var json_handler = {}
 
 //TODO : Agregar los intereses a los archivos JSON generados
-//TODO : Recibir el id_user en la funcion armarJsonListaUsuarios
 /*
  * Recibo el resultado de una query sobre la tabla users
  * que me devuelve todos los usuarios de la tabla
@@ -15,12 +14,12 @@ json_handler.armarJsonListaUsuarios = function(result) {
   for (var i = 0; i < result.rowCount; i++) {
     var oneUser = {
       user : {
+        id : result.rows[i].id_user,
         name : result.rows[i].name,
         alias : result.rows[i].alias,
         email : result.rows[i].email,
         sex : result.rows[i].sex,
-        //photo_profile: result.rows[i].photo_profile,
-        photo_profile: "http://t2shared.herokuapp.com/users/id_user/photo",
+        photo_profile: "http://t2shared.herokuapp.com/users/"+result.rows[i].id_user+"/photo",
         interests: [],
         location : {
           latitude : result.rows[i].latitude,

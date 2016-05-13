@@ -100,6 +100,12 @@ db_handler.deleteUser = function (req, res, usrID, client, done) {
   return false;
 }
 
+db_handler.updatePhoto = function (req, res, usrID, client, done) {
+  var photo = req.body.photo;
+  var query = client.query("UPDATE users SET photo_profile = ($1) WHERE id_user = ($2)",[photo,usrID], function (err, result) {
+    db_handler.queryExitosa(err,result,res,done);
+  });
+}
 
 //Error 500 al querer conectarse a la base de datos
 db_handler.capturarErrorConnect = function (err, res, done) {

@@ -13,10 +13,11 @@ pg.defaults.ssl = true;
 function validarUsuario(req) {
   var u = req.body.user;
   if (u.name && u.email && u.alias && u.sex && u.location.longitude && u.location.latitude ) {
-    return true;
-  } else {
-    return false;
+    if (u.sex == 'F' || u.sex == 'M') {
+      return true;
+    }
   }
+  return false;
 }
 
 /* GET users listing. */
@@ -61,12 +62,11 @@ Parametros recibidos:
 "photo": “base_64”
 }
 */
-router.put('/[0-9]+/photo',function(req, res) {
-/*  var usrID = null;
+router.get('/[0-9]+/photo',function(req, res) {
+  var usrID = req.url.match('[0-9]+');
+  usrID = usrID[0];
   var my_cb_handler = cb_handler(req,res,usrID,db_handler.updatePhoto);
   db_handler.atenderQuery(req,res,my_cb_handler);
-*/res.sendStatus(200);
-  res.end();
 });
 
 //Baja de usuario.
