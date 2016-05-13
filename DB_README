@@ -1,0 +1,51 @@
+################################################################################
+Opcion 1:
+
+Se definen las tablas a utilizar:
+users:
+pictures:
+locations:
+interests:
+users_interests:
+
+## Se define un tipo de datos ENUM para definir el sexo en tabla users
+
+> CREATE TYPE sex AS ENUM ('F','M');
+
+## Se define la tabla users
+
+> CREATE TABLE users (
+	id_user SERIAL PRIMARY KEY,
+	name VARCHAR(40),
+	alias VARCHAR(40),
+	email VARCHAR(40),
+	sex sex,
+	latitude REAL,
+	longitude REAL,
+	photo_profile TEXT
+	);
+
+## Se define la tabla interests
+
+> CREATE TABLE interests (
+	id_interest SERIAL PRIMARY KEY,
+	category VARCHAR(20) PRIMARY KEY
+	);
+
+## Se define la tabla users_interests
+
+> CREATE TABLE users_interests (
+	id_usr_int SERIAL PRIMARY KEY,
+	id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
+	id_interest_category INTEGER NOT NULL REFERENCES interests(id_interest) ON DELETE CASCADE,
+	value VARCHAR(40)
+	);
+
+## Se define la tabla pictures
+## TODO: Considerar guardar info sobre cual es foto de perfil y orden de pics
+
+> CREATE TABLE pictures (
+	id_picture SERIAL PRIMARY KEY,
+	id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
+	pic TEXT
+	);
