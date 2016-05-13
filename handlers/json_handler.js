@@ -2,6 +2,12 @@ var Constants = require('../constants/constants.js');
 
 var json_handler = {}
 
+/*
+ * Recibo el resultado de una query sobre la tabla users
+ * que me devuelve todos los usuarios de la tabla
+ * y armo un objeto JSON con los campos necesarios para devolver
+ * segun la especificacion de la API
+ */
 json_handler.armarJsonListaUsuarios = function(result) {
   var jsonObject = { "users" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
@@ -24,6 +30,11 @@ json_handler.armarJsonListaUsuarios = function(result) {
   return jsonObject;
 }
 
+/*
+ * Una vez que se da de alta un usuario nuevo, necesito devolver
+ * un JSON que contenga los campos que especifica la API que
+ * hay que devolver del usuario recien creado
+ */
 json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
   var jsonObject = {
     user : {
@@ -44,6 +55,12 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
   return jsonObject;
 }
 
+/*
+ * Recibo el resultado de una query sobre la tabla users
+ * que me devuelve un usuario de la tabla
+ * y armo un objeto JSON con los campos necesarios para devolver
+ * segun la especificacion de la API
+ */
 json_handler.armarJsonUsuarioConsultado = function (result) {
   var jsonObject = {
     user : {
