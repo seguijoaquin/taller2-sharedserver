@@ -1,3 +1,8 @@
+/*
+ * Con este modulo se pretende abstraer el llamado de funciones a la DB
+ * Se crea una variable cb_handler que contendra la funcion especifica
+ * que se quiere lanzar
+ */
 function cb_handler(req, res, usrID, next) {
   var my_req = req;
   var my_res = res;
@@ -13,14 +18,21 @@ function cb_handler(req, res, usrID, next) {
 
   /*
    * Se llama inmediatamente despues de que se hace un connect con la DB
+   * Se necesita tener seteado a un cliente antes de hacer una query
+   * Pero solo se puede setear despues de haber hecho un connect
+   * Lo mismo con la funcion done(); que finaliza la conexion con la DB
   */
   function set_ClientDone(client,done) {
     my_client = client;
     my_done = done;
   }
 
+  /*
+   * Una vez recibida la funcion que realizara la query en la DB
+   * se lanza desde el cb_handler, invocando a launch()
+   * como si fuese una funcion anonima
+   */
   function launch() {
-    console.log('launching...');
     my_next(my_req, my_res, my_usrID, my_client, my_done);
   }
 
