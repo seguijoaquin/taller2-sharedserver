@@ -2,6 +2,8 @@ var Constants = require('../constants/constants.js');
 
 var json_handler = {}
 
+//TODO : Agregar los intereses a los archivos JSON generados
+
 /*
  * Recibo el resultado de una query sobre la tabla users
  * que me devuelve todos los usuarios de la tabla
@@ -17,7 +19,8 @@ json_handler.armarJsonListaUsuarios = function(result) {
         alias : result.rows[i].alias,
         email : result.rows[i].email,
         sex : result.rows[i].sex,
-        photo_profile: result.rows[i].photo_profile,
+        //photo_profile: result.rows[i].photo_profile,
+        photo_profile: "http://t2shared.herokuapp.com/users/id_user/photo",
         interests: [],
         location : {
           latitude : result.rows[i].latitude,
@@ -68,6 +71,7 @@ json_handler.armarJsonUsuarioConsultado = function (result) {
       alias : result.rows[0].alias,
       email : result.rows[0].email,
       sex : result.rows[0].sex,
+      photo_profile : result.rows[0].photo_profile,
       location : {
         latitude : result.rows[0].latitude,
         longitude : result.rows[0].longitude
