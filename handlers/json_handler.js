@@ -3,7 +3,7 @@ var Constants = require('../constants/constants.js');
 var json_handler = {}
 
 //TODO : Agregar los intereses a los archivos JSON generados
-
+//TODO : Recibir el id_user en la funcion armarJsonListaUsuarios
 /*
  * Recibo el resultado de una query sobre la tabla users
  * que me devuelve todos los usuarios de la tabla
