@@ -11,7 +11,8 @@ var db_handler = {}
 db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
     if (err) {
-      db_handler.capturarErrorConnect(err,res,done);
+      done();
+      db_handler.sendError(err,res,500);
       return false;
     } else {
       next.set_ClientDone(client,done);
@@ -25,8 +26,7 @@ db_handler.getUsers = function (req, res, usrID, client, done) {
   var query = client.query("SELECT * FROM users",function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
     if (err) {
-      console.log(err);
-      res.json({error: err}).end();
+      db_handler.sendError(err,res,500);
     } else {
       query.on('row', function(row,result) {result.addRow(row);});
       query.on('end', function(result) {
@@ -41,8 +41,7 @@ db_handler.getInterests = function (req, res, usrID, client, done) {
   var query = client.query("SELECT * FROM interests",function(err, result) {
     done();
     if (err) {
-      console.log(err);
-      res.json({error: err}).end();
+      db_handler.sendError(err,res,500);
     } else {
       query.on('row', function(row,result) {result.addRow(row);});
       query.on('end', function (result) {
@@ -53,7 +52,6 @@ db_handler.getInterests = function (req, res, usrID, client, done) {
   });
 }
 
-
 db_handler.addUser = function (req, res, usrID, client, done) {
   // TODO : chequear intereses y agregar en caso necesario
   var photo_profile = "no_photo";
@@ -61,15 +59,13 @@ db_handler.addUser = function (req, res, usrID, client, done) {
   var check_query = client.query("SELECT * FROM users WHERE email=($1)",[u.email],function (err, result_check) {
     if(result_check.rowCount > 0) {
       done();
-      console.log("YA EXISTE MAIL");
-      res.status(418).json({error: "Ya existe mail"}).end();
+      db_handler.sendError("Ya existe mail",res,500);
     } else {
       var query = client.query("INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
         [u.name,u.email,u.alias,u.sex,u.location.latitude,u.location.longitude,photo_profile],function(err, result) {
         done(); //Devuelvo el cliente al pool xq no necesito más la conexion
         if (err) {
-          console.log(err);
-          res.status(500).json({error: err}).end();
+          db_handler.sendError(err,res,500);
         } else {
           var id_user = result.rows[0].id_user;
           var jsonObject = json_handler.armarJsonUsuarioNuevo(req,id_user);
@@ -97,8 +93,7 @@ db_handler.getUser = function (req, res, usrID, client, done) {
     done();
     //Si tiro un id que no existe, la query falla y entra por aca
     if (err) {
-      console.log(err);
-      res.sendStatus(404).end();
+      db_handler.sendError(err,res,404);
     } else {
       if (result.rowCount) {
         var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
@@ -125,19 +120,15 @@ db_handler.updatePhoto = function (req, res, usrID, client, done) {
   });
 }
 
-//Error 500 al querer conectarse a la base de datos
-db_handler.capturarErrorConnect = function (err, res, done) {
-    done(); //Ante error de connect, devuelvo el client al pool
-    console.log(err);
-    res.sendStatus(500).end();
+db_handler.sendError = function (err, res, status) {
+  console.log(err);
+  res.json({succes: false, error: err}).status(status).end();
 }
 
 db_handler.queryExitosa = function (err, result, res, done) {
   done(); //Devuelvo el cliente al pool xq no necesito más la conexion
   if (err) {
-    console.log(err);
-    //res.status(500).json({error: err}).end();
-    res.sendStatus(500).end();
+    db_handler.sendError(err,res,500);
   } else {
     res.sendStatus(200).end();
   }
