@@ -37,10 +37,28 @@ db_handler.getUsers = function (req, res, usrID, client, done) {
   });
 }
 
+db_handler.getInterests = function (req, res, usrID, client, done) {
+  var query = client.query("SELECT * FROM interests",function(err, result) {
+    done();
+    if (err) {
+      console.log(err);
+      res.json({error: err}).end();
+    } else {
+      query.on('row', function(row,result) {result.addRow(row);});
+      query.on('end', function (result) {
+        var respuesta = json_handler.armarJsonListaIntereses(result);
+        res.json(respuesta).end();
+      })
+    }
+  });
+}
+
+
 db_handler.addUser = function (req, res, usrID, client, done) {
+  // TODO : chequear intereses y agregar en caso necesario
   var photo_profile = "no_photo";
   var u = req.body.user;
-  var check_query = client.query("SELECT * FROM users WHERE email = ($1)",[u.email],function (err, result_check) {
+  var check_query = client.query("SELECT * FROM users WHERE email=($1)",[u.email],function (err, result_check) {
     if(result_check.rowCount > 0) {
       done();
       console.log("YA EXISTE MAIL");
@@ -66,9 +84,9 @@ db_handler.addUser = function (req, res, usrID, client, done) {
 //Si en el json no existen los campos, pone null
 //Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
-  var query = client.query("UPDATE users SET name = ($1), email = ($2), alias = ($3), sex = ($4), latitude = ($5), longitude = ($6) WHERE id_user = ($7)",
-    [req.body.user.name, req.body.user.email, req.body.user.alias,
-      req.body.user.sex, req.body.user.location.latitude,req.body.user.location.longitude, usrID],
+  var u = req.body.user;
+  var query = client.query("UPDATE users SET name=($1),email=($2),alias=($3),sex=($4),latitude=($5),longitude=($6) WHERE id_user=($7)",
+    [u.name, u.email,u.alias,u.sex, u.location.latitude,u.location.longitude, usrID],
     function (err,result) {
       db_handler.queryExitosa (err, result, res, done);
     });
@@ -94,7 +112,7 @@ db_handler.getUser = function (req, res, usrID, client, done) {
 }
 
 db_handler.deleteUser = function (req, res, usrID, client, done) {
-  var query = client.query("DELETE FROM users WHERE id_user = ($1)",[usrID],function (err, result) {
+  var query = client.query("DELETE FROM users WHERE id_user=($1)",[usrID],function (err, result) {
     db_handler.queryExitosa(err,result,res, done);
   });
   return false;
@@ -102,7 +120,7 @@ db_handler.deleteUser = function (req, res, usrID, client, done) {
 
 db_handler.updatePhoto = function (req, res, usrID, client, done) {
   var photo = req.body.photo;
-  var query = client.query("UPDATE users SET photo_profile = ($1) WHERE id_user = ($2)",[photo,usrID], function (err, result) {
+  var query = client.query("UPDATE users SET photo_profile=($1) WHERE id_user=($2)",[photo,usrID], function (err, result) {
     db_handler.queryExitosa(err,result,res,done);
   });
 }

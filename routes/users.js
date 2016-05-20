@@ -1,14 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var pg = require('pg');
 var Constants = require('../constants/constants.js');
-var json_handler = require('../handlers/json_handler.js');
 var cb_handler = require('../handlers/cb_handler.js');
 var db_handler = require('../handlers/db_handler.js');
 
-var urlDB = Constants.POSTGRE_URL_DB;
-
-pg.defaults.ssl = true;
 
 function validarUsuario(req) {
   var u = req.body.user;
@@ -20,7 +15,7 @@ function validarUsuario(req) {
   return false;
 }
 
-/* GET users listing. */
+//Listar usuarios
 router.get('/', function(req, res) {
   var my_cb_handler = cb_handler(req, res, null, db_handler.getUsers);
   db_handler.atenderQuery(req,res,my_cb_handler);
@@ -56,12 +51,7 @@ router.put('/[0-9]+',function(req, res) {
   }
 });
 
-/*Actualiza foto de perfil
-Parametros recibidos:
-{
-"photo": “base_64”
-}
-*/
+//Actualiza foto de perfil
 router.get('/[0-9]+/photo',function(req, res) {
   var usrID = req.url.match('[0-9]+');
   usrID = usrID[0];
