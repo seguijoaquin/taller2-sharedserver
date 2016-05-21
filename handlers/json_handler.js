@@ -42,8 +42,8 @@ json_handler.armarJsonListaIntereses = function(result) {
   var jsonObject = { "interests" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneInterest = {
-      category : result.interest.category,
-      value : result.interest.value
+      category : result.rows[i].interest.category,
+      value : result.rows[i].interest.value
     }
     jsonObject.interests.push(oneInterest);
   }
