@@ -52,6 +52,18 @@ db_handler.getInterests = function (req, res, usrID, client, done) {
   });
 }
 
+db_handler.addInterest = function (req, res, usrID, client, done) {
+  var i = req.body.interest;
+  var query = client.query("INSERT INTO interests (category,value) values($1,$2) RETURNING id_interest",[i.category,i.value],function(err,result) {
+    done();
+    if (err) {
+      db_handler.sendError(err,res,500);
+    } else {
+      res.sendStatus(201).end();
+    }
+  });
+}
+
 db_handler.addUser = function (req, res, usrID, client, done) {
   // TODO : chequear intereses y agregar en caso necesario
   var photo_profile = "no_photo";
