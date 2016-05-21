@@ -4,7 +4,6 @@ Opcion 1:
 Se definen las tablas a utilizar:
 users:
 pictures:
-locations:
 interests:
 users_interests:
 
