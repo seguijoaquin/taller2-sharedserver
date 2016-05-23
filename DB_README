@@ -24,6 +24,13 @@ users_interests:
 	photo_profile TEXT
 	);
 
+## Se define la tabla categories
+
+> CREATE TABLE categories (
+	id_category SERIAL PRIMARY KEY,
+	category TEXT UNIQUE NOT NULL
+);
+
 ## Se define la tabla interests
 /*
 * This specifies that the combination of values in the indicated columns is
@@ -32,8 +39,8 @@ users_interests:
 */
 > CREATE TABLE interests (
 	id_interest SERIAL PRIMARY KEY,
-	category TEXT NOT NULL,
-	value TEXT NOT NULL,
+	category TEXT NOT NULL REFERENCES categories(category) ON DELETE CASCADE,
+	value TEXT,
 	UNIQUE (category, value)
 	);
 
