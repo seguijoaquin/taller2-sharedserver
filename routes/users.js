@@ -15,6 +15,11 @@ function validarUsuario(req) {
   return false;
 }
 
+function sendError(err,res,status) {
+  console.log(err);
+  return res.json({succes: false, error: err}).status(status).end();
+}
+
 //Listar usuarios
 router.get('/', function(req, res) {
   var my_cb_handler = cb_handler(req, res, null, db_handler.getUsers);
@@ -27,8 +32,7 @@ router.post('/',function(req, res) {
     var my_cb_handler = cb_handler(req, res,null, db_handler.addUser);
     db_handler.atenderQuery(req,res,my_cb_handler);
   } else {
-    console.log(Constants.ERROR_MSG_INVALID_USER);
-    res.status(418).json({error: "Invalid user"}); //TODO: DEVOLVER INVALID USER
+    return sendError(Constants.ERROR_MSG_INVALID_USER,res,500);
   }
 });
 
@@ -46,8 +50,7 @@ router.put('/[0-9]+',function(req, res) {
     var my_cb_handler = cb_handler(req, res, usrID, db_handler.modifyUser);
     db_handler.atenderQuery(req,res,my_cb_handler);
   } else {
-    console.log(Constants.ERROR_MSG_INVALID_USER);
-    res.status(418).json({error: "Invalid user"}); //TODO: DEVOLVER INVALID USER
+    return sendError(Constants.ERROR_MSG_INVALID_USER,res,500);
   }
 });
 
