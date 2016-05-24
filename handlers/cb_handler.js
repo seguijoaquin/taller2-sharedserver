@@ -3,11 +3,11 @@
  * Se crea una variable cb_handler que contendra la funcion especifica
  * que se quiere lanzar
  */
-function cb_handler(req, res, usrID, next) {
+function cb_handler(req, res, param, next) {
   var my_req = req;
   var my_res = res;
   var my_next = next;
-  var my_usrID = usrID;
+  var my_param = param;
   /*
    * Al querer armar la funcion de callback a llamar, no estamos conectados
    * a la base de datos, por lo que no tenemos el cliente seteado todavía
@@ -33,13 +33,13 @@ function cb_handler(req, res, usrID, next) {
    * como si fuese una funcion anonima
    */
   function launch() {
-    my_next(my_req, my_res, my_usrID, my_client, my_done);
+    my_next(my_req, my_res, my_param, my_client, my_done);
   }
 
   return {
     req: my_req,
     res: my_res,
-    usrID: my_usrID,
+    param: my_param,
     next: my_next,
     client: my_client,
     done: my_done,
