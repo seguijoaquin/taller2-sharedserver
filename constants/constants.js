@@ -16,13 +16,15 @@ module.exports = Object.freeze({
 
     ERROR_MSG_INVALID_USER: "[ERROR: El usuario es invalido]",
 
+    ERROR_EMAIL_ALREADY_EXISTS: "[ERROR: El email ya se encuentra registrado]",
+
 
 
     // ---------------------------- QUERYS ----------------------------------------
 
     QUERY_LISTADO_USUARIOS: "SELECT * FROM usuarios",
 
-    QUERY_ALTA_USUARIO: "INSERT INTO usuarios (name,email,alias,latitude,longitude) values($1,$2,$3,$4,$5) RETURNING id",
+    QUERY_ALTA_USUARIO: "INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
 
     QUERY_CONSULTA_PERFIL_USUARIO: "SELECT * FROM usuarios WHERE id = ($1)",
 
