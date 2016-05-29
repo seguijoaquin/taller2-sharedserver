@@ -53,19 +53,24 @@ db_handler.getInterests = function (req, res, param, client, done) {
   });
 }
 
-db_handler.addInterest = function (req, res, param, client, done) {
-  var i = req.body.interest;
-  var query = client.query("INSERT INTO interests (category,value) values($1,$2) RETURNING id_interest",[i.category,i.value],function(err,result) {
+function createInterest(res,client,done,interest,cb) {
+  var query = client.query("INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",[interest.category,interest.value],function(err,result){
     done();
-    if (err) {
-      db_handler.sendError(err,res,500);
+    if (err) {db_handler.sendError(err,res,500);
     } else {
-      res.sendStatus(201).end();
+      cb(result.rows[0].id_interest);
     }
   });
 }
 
-function saveUser(req,res,client,done,cb) {
+db_handler.addInterest = function (req, res, param, client, done) {
+  var interest = req.body.interest;
+  createInterest(res,client,done,interest,function(id_interest) {
+    res.sendStatus(201).end();
+  });
+}
+
+function saveUser(req,res,client,done,cb_id_user) {
   var photo_profile = "no_photo";
   var name = req.body.user.name;
   var email = req.body.user.email;
@@ -75,114 +80,135 @@ function saveUser(req,res,client,done,cb) {
   var longitude = req.body.user.location.longitude;
   var interests = req.body.user.interests;
 
-  var query = client.query(Constants.QUERY_ALTA_USUARIO,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
+  client.query(Constants.QUERY_ALTA_USUARIO,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
     if (err) {
       db_handler.sendError(err,res,done,500);
     } else {
       done();
       var id_user = result.rows[0].id_user;
-      cb(id_user);
+      cb_id_user(id_user);
     }
   });
 }
 
-function check_my_category_and_interest (req, res, interest, client, done, cb) {
-  //Chequeo las categorias
-  var query_category = client.query("SELECT * FROM categories WHERE category=($1)",[interest.category], function(err,result_category) {
-    //TODO: Manejo de errores
-    done();
-    if (result_category.rowCount > 0) {
-      var query_interest = client.query("SELECT * FROM interests WHERE category=($1) AND value=($2)",[interest.category,interest.value], function(err,result_interest) {
-        done();
-        if(result_interest.rowCount > 0) {
-          cb(true,true,interest,result_interest.rows[0].id_interest);
-        } else {
-          cb(true,false,interest,null);
+/*
+ * Son intereses validos los que tienen una categoria existente
+ * en la tabla categories.
+ * Inserto en valid_interests todos los intereses que llegan el req.body
+ * cuya categoria esta en la tabla categories. Y lo devuelvo.
+ */
+function getValidCategories (interests,client,done,valid_categories,cb) {
+  var checked = 0;
+  for (var i = 0; i<interests.length;++i) {
+    client.query("SELECT * FROM categories WHERE category=($1)",[interests[i].category], function(err,result){
+      done();
+      if (err) {db_handler.sendError(err,res,done,500);}
+      else {
+        if (result.rowCount > 0) {
+          valid_categories.push(result.rows[0]);
         }
-      });
-    } else {
-      cb(false,false,interest,null);
-    }
-  });
-}
-
-function saveInterest(req,res,client,done,id_interest,id_user,cb) {
-  var query = client.query("INSERT INTO users_interests (id_user,id_interest) values ($1,$2)",[id_user,id_interest],function(err,result){
-    done();
-    if (err) {
-      cb(err);
-    } else {
-      cb(null);
-    }
-  });
-}
-
-function createInterest(req,res,client,done,interest,cb) {
-  var query = client.query("INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",[interest.category,interest.value],function(err,result){
-    done();
-    if (err) {
-      cb(null,err);
-    } else {
-      cb(result.rows[0].id_interest,null);
-    }
-  });
-}
-
-function check_category_and_interest (req,res,client,done,id_user,interest,cb) {
-  check_my_category_and_interest(req,res,interest,client,done, function(category_exists,interest_exists,my_interest,id_interest){
-    if(category_exists) {
-      if (interest_exists) {
-        saveInterest(req,res,client,done,id_interest,id_user,function(err) {
-          if(!err) {console.log("Guardando el interes: "+my_interest.category+" - "+my_interest.value); cb(my_interest,true);}
-          else { console.log("ERROR: no se pudo guardar el interes: "+my_interest.category+ " - "+my_interest.value); cb(my_interest,false);}
-        });
-      } else {
-        createInterest(req,res,client,done,my_interest,function(id_interest,err) {
-          if (!err) {
-            saveInterest(req,res,client,done,id_interest,id_user,function(err) {
-              if(!err) {console.log("Guardando el interes: "+my_interest.category+" - "+my_interest.value); cb(my_interest,true);}
-              else { console.log("ERROR: no se pudo guardar el interes: "+my_interest.category+ " - "+my_interest.value); cb(my_interest,false);}
-            });
-          }
-        });
+        if(++checked == interests.length) cb(valid_categories);
       }
-    } else {
-      console.log("ERROR: No existe la categoria "+my_interest.category);
-      cb(my_interest,false);
-    }
+    });
+  }
+}
+
+function saveInterests(res,client,done,id_user,valid_interests) {
+  for (var i in valid_interests) {
+    client.query("SELECT * FROM interests WHERE category=($1) AND value=($2)",
+    [valid_interests[i].category,valid_interests[i].value], function(err,result){
+      done();
+      if (err) {db_handler.sendError(err,res,done,500);}
+      else {
+        if (result.rowCount > 0) {
+          save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
+        } else {
+          createInterest(res,client,done,valid_interests[i],function (id_interest) {
+            save_one_interest(res,client,done,id_user,id_interest);
+          });
+        }
+      }
+    });
+  }
+}
+
+function save_one_interest(res,client,done,id_user,id_interest) {
+  client.query("INSERT INTO users_interests (id_user,id_interest) values ($1,$2)",[id_user,id_interest],function(err,result){
+    done();
+    if (err) {db_handler.sendError(err,res,done,500);}
   });
 }
 
-db_handler.checkInterests = function (req, res, id_user, client, done) {
-  var interests = req.body.user.interests;
+function getValidInterests(interests,valid_categories,cb) {
   var valid_interests = [];
   var checked = 0;
-  if (interests && interests.length > 0) {
-      //Tengo que armar el json con los intereses validos creados
-      for (var i = 0; i < interests.length; ++i) {
-        check_category_and_interest(req,res,client,done,id_user,interests[i], function(valid_interest,err) {
-          valid_interests.push(valid_interest);
-        });
+  var i = 0;
+  var j = 0;
+
+  while (i<valid_categories.length) {
+    while (j<interests.length) {
+      if(valid_categories[i].category == interests[j].category) {
+        valid_interests.push(interests[j]);
+        ++i;
+        ++j;
+      }else{
+        ++j;
       }
+      if (++checked == valid_categories.length) cb(valid_interests);
+    }
   }
-  //Si no tiene intereses, devuelvo un json igual al que recibo
-  res.json(req.body).status(201).end();
+}
+
+db_handler.checkInterests = function (req, res, client, done, cb) {
+  var interests = req.body.user.interests;
+  var valid_categories = [];
+  var err = null;
+  var has_interests = (interests && interests.length > 0);
+  if (has_interests) {
+    //Verifico que la categoria exista, si existe la agrego a los intereses validos, sino no
+    getValidCategories(interests,client,done,valid_categories,function (categorias_validas) {
+      //Una vez que tengo las categorias que estan en la tabla categories,
+      //me guardo el vector de intereses que tienen esas categorias, y el resto se descarta
+      getValidInterests(interests,valid_categories, function(valid_interests){
+        cb(has_interests,valid_interests,err);
+      });
+    });
+  } else {
+    //Devuelvo: Has interests false, vector vacío, y error null
+    var valid_interests = [];
+    cb(has_interests,valid_interests,err);
+  }
+}
+
+function devolverUser(req,res,id_user,done,valid_interests) {
+  done();
+  var usuario = json_handler.armarJsonUsuarioNuevo(req,id_user);
+  usuario.user.interests = valid_interests;
+  res.json(usuario).status(201).end();
 }
 
 db_handler.addUser = function (req, res, param, client, done) {
   var email = req.body.user.email;
   var check_query = client.query("SELECT * FROM users WHERE email=($1)",[email],function (err, check_result) {
-    done();
-    if (err) { //Si existe error al consultar por email
-      db_handler.sendError(err,res,null,500);
+    //done(); //No se si es necesario llamarlo si todavia hay que hacer querys
+    //Si existe error al consultar por email
+    if (err) { db_handler.sendError(err,res,done,500);
     } else {
-      if (check_result.rowCount > 0) { //Si la consulta devuelve un email
-        db_handler.sendError(Constants.ERROR_EMAIL_ALREADY_EXISTS,res,null,500);
+      var hay_email = (check_result.rowCount > 0)
+      if (hay_email) {
+        db_handler.sendError(Constants.ERROR_EMAIL_ALREADY_EXISTS,res,done,500);
       } else { //Si el email consultado no esta en la tabla users
-        //Guardo el usuario y devuelvo id_user
-        saveUser(req,res,client,done, function(id_user){
-          //Chequeo si hay intereses
-          db_handler.checkInterests(req,res,id_user,client,done);
+        //Chequeo si hay intereses
+        db_handler.checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
+          if (err) { db_handler.sendError(err,res,done,500);
+          } else {
+            saveUser(req,res,client,done,function (id_user) {
+              if (has_interests) {
+                saveInterests(res,client,done,id_user,valid_interests);
+              }
+              devolverUser(req,res,id_user,done,valid_interests);
+            });
+          }
         });
       }
     }
@@ -205,10 +231,10 @@ db_handler.getUser = function (req, res, usrID, client, done) {
   var query = client.query("SELECT * FROM users WHERE id_user = ($1)",[usrID],function (err,result) {
     done();
     //Si tiro un id que no existe, la query falla y entra por aca
-    if (err) {return db_handler.sendError(err,res,done,404);}
+    if (err) { db_handler.sendError(err,res,done,404);}
     if (result.rowCount) {
       var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
-      return res.json(jsonObject);
+      res.json(jsonObject).end();
     } else {
       //No se por que nunca entra aca si hago una query con un id invalido!
       res.sendStatus(404).end(); //User not found
