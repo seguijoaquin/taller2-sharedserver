@@ -1,9 +1,9 @@
 var pg = require('pg');
 var json_handler = require('./json_handler');
-var Constants = require('../constants/constants.js');
+var Cons = require('../constants/constants.js');
 var cb_handler = require('./cb_handler.js');
 
-var urlDB = Constants.POSTGRE_URL_DB;
+var urlDB = Cons.POSTGRE_URL_DB;
 
 pg.defaults.ssl = true;
 
@@ -12,84 +12,13 @@ var db_handler = {}
 db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
     if (err) {
-      done();
-      db_handler.sendError(err,res,500);
-      return false;
+      db_handler.sendError(err,res,done,500);
     } else {
       next.set_ClientDone(client,done);
       next.launch();
     }
   });
 };
-
-db_handler.getUsers = function (req, res, param, client, done) {
-  //TODO: JOIN con tabla de users_interests
-  var query = client.query("SELECT * FROM users",function(err, result) {
-    done(); //Devuelvo el cliente al pool xq no necesito más la conexion
-    if (err) {
-      db_handler.sendError(err,res,500);
-    } else {
-      query.on('row', function(row,result) {result.addRow(row);});
-      query.on('end', function(result) {
-        var respuesta = json_handler.armarJsonListaUsuarios(result);
-        res.json(respuesta).end();
-      })
-    }
-  });
-}
-
-db_handler.getInterests = function (req, res, param, client, done) {
-  var query = client.query("SELECT * FROM interests",function(err, result) {
-    done();
-    if (err) {
-      db_handler.sendError(err,res,500);
-    } else {
-      query.on('row', function(row,result) {result.addRow(row);});
-      query.on('end', function (result) {
-        var respuesta = json_handler.armarJsonListaIntereses(result);
-        res.json(respuesta).end();
-      })
-    }
-  });
-}
-
-function createInterest(res,client,done,interest,cb) {
-  var query = client.query("INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",[interest.category,interest.value],function(err,result){
-    done();
-    if (err) {db_handler.sendError(err,res,500);
-    } else {
-      cb(result.rows[0].id_interest);
-    }
-  });
-}
-
-db_handler.addInterest = function (req, res, param, client, done) {
-  var interest = req.body.interest;
-  createInterest(res,client,done,interest,function(id_interest) {
-    res.sendStatus(201).end();
-  });
-}
-
-function saveUser(req,res,client,done,cb_id_user) {
-  var photo_profile = "no_photo";
-  var name = req.body.user.name;
-  var email = req.body.user.email;
-  var alias = req.body.user.alias;
-  var sex = req.body.user.sex;
-  var latitude = req.body.user.location.latitude;
-  var longitude = req.body.user.location.longitude;
-  var interests = req.body.user.interests;
-
-  client.query(Constants.QUERY_ALTA_USUARIO,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
-    if (err) {
-      db_handler.sendError(err,res,done,500);
-    } else {
-      done();
-      var id_user = result.rows[0].id_user;
-      cb_id_user(id_user);
-    }
-  });
-}
 
 /*
  * Son intereses validos los que tienen una categoria existente
@@ -101,7 +30,7 @@ function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
     client.query("SELECT * FROM categories WHERE category=($1)",[interests[i].category], function(err,result){
-      done();
+      //done(); TODO: REVISAR si hay que llamar a done
       if (err) {db_handler.sendError(err,res,done,500);}
       else {
         if (result.rowCount > 0) {
@@ -113,28 +42,48 @@ function getValidCategories (interests,client,done,valid_categories,cb) {
   }
 }
 
-function saveInterests(res,client,done,id_user,valid_interests) {
+function processInterests(valid_interests,cb) {
   for (var i in valid_interests) {
-    client.query("SELECT * FROM interests WHERE category=($1) AND value=($2)",
-    [valid_interests[i].category,valid_interests[i].value], function(err,result){
-      done();
-      if (err) {db_handler.sendError(err,res,done,500);}
-      else {
-        if (result.rowCount > 0) {
-          save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
-        } else {
-          createInterest(res,client,done,valid_interests[i],function (id_interest) {
-            save_one_interest(res,client,done,id_user,id_interest);
-          });
-        }
-      }
-    });
+    cb(valid_interests[i].category,valid_interests[i].value);
   }
+}
+
+function createInterest(res,client,done,category,value,cb) {
+  var query = client.query("INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",[category,value],function(err,result){
+    //done();
+    if (err) { cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
+    } else {
+      cb(result.rows[0].id_interest,err);
+    }
+  });
+}
+
+function saveInterests(res,client,done,id_user,category,value) {
+  client.query("SELECT * FROM interests WHERE category=($1) AND value=($2)",[category,value], function(err,result){
+    //done();
+    if (err) {db_handler.sendError(err,res,done,500);
+    } else {
+      if (result.rowCount > 0) {
+        //Si el interes ya existe, obtengo el id_interest y lo inserto en users_interests
+        save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
+      } else {
+        //Si no existe, lo creo para obtener el id_interest e insertarlo en users_interests
+        createInterest(res,client,done,category,value,function (id_interest,err) {
+          if (err) {
+            console.error(err);
+          } else {
+            save_one_interest(res,client,done,id_user,id_interest);
+          }
+        });
+      }
+    }
+  });
 }
 
 function save_one_interest(res,client,done,id_user,id_interest) {
   client.query("INSERT INTO users_interests (id_user,id_interest) values ($1,$2)",[id_user,id_interest],function(err,result){
-    done();
+    //done(); TODO:REVISAR si corresponde llamar
+    //console.log(result);
     if (err) {db_handler.sendError(err,res,done,500);}
   });
 }
@@ -159,7 +108,7 @@ function getValidInterests(interests,valid_categories,cb) {
   }
 }
 
-db_handler.checkInterests = function (req, res, client, done, cb) {
+function checkInterests(req, res, client, done, cb) {
   var interests = req.body.user.interests;
   var valid_categories = [];
   var err = null;
@@ -180,6 +129,28 @@ db_handler.checkInterests = function (req, res, client, done, cb) {
   }
 }
 
+function saveUser(req,res,client,done,cb) {
+  var photo_profile = "no_photo";
+  var name = req.body.user.name;
+  var email = req.body.user.email;
+  var alias = req.body.user.alias;
+  var sex = req.body.user.sex;
+  var latitude = req.body.user.location.latitude;
+  var longitude = req.body.user.location.longitude;
+  var interests = req.body.user.interests;
+  var id_user = "";
+
+  client.query(Cons.QUERY_ALTA_USUARIO,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
+    if (err) {
+      cb(id_user,err);
+    } else {
+      //done(); TODO: REVISAR si hay que llamarlo
+      id_user = result.rows[0].id_user;
+      cb(id_user,err);
+    }
+  });
+}
+
 function devolverUser(req,res,id_user,done,valid_interests) {
   done();
   var usuario = json_handler.armarJsonUsuarioNuevo(req,id_user);
@@ -187,30 +158,80 @@ function devolverUser(req,res,id_user,done,valid_interests) {
   res.json(usuario).status(201).end();
 }
 
-db_handler.addUser = function (req, res, param, client, done) {
-  var email = req.body.user.email;
+db_handler.getInterests = function (req, res, param, client, done) {
+  var query = client.query("SELECT * FROM interests",function(err, result) {
+    done();
+    if (err) {
+      db_handler.sendError(err,res,done,500);
+    } else {
+      query.on('row', function(row,result) {result.addRow(row);});
+      query.on('end', function (result) {
+        var respuesta = json_handler.armarJsonListaIntereses(result);
+        res.json(respuesta).end();
+      })
+    }
+  });
+}
+
+db_handler.addInterest = function (req, res, param, client, done) {
+  var category = req.body.interests.category;
+  var value = req.body.interests.value;
+  createInterest(res,client,done,category,value,function(id_interest,err) {
+    if (err) {
+      //db_handler.sendError(err,res,done,500);
+      console.error("Ocurrio un error");
+    } else {
+      res.sendStatus(201).end();
+    }
+  });
+}
+
+db_handler.addUser = function(req, res, param, client, done) {
+  //var email = req.body.user.email;
+  var email = "";
   var check_query = client.query("SELECT * FROM users WHERE email=($1)",[email],function (err, check_result) {
     //done(); //No se si es necesario llamarlo si todavia hay que hacer querys
     //Si existe error al consultar por email
     if (err) { db_handler.sendError(err,res,done,500);
     } else {
-      var hay_email = (check_result.rowCount > 0)
-      if (hay_email) {
-        db_handler.sendError(Constants.ERROR_EMAIL_ALREADY_EXISTS,res,done,500);
+      //Si la consulta devuelve un email existente
+      if (check_result.rowCount > 0) {
+        db_handler.sendError(Cons.ERROR_EMAIL_ALREADY_EXISTS,res,done,500);
       } else { //Si el email consultado no esta en la tabla users
         //Chequeo si hay intereses
-        db_handler.checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
+        checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
           if (err) { db_handler.sendError(err,res,done,500);
           } else {
-            saveUser(req,res,client,done,function (id_user) {
-              if (has_interests) {
-                saveInterests(res,client,done,id_user,valid_interests);
+            saveUser(req,res,client,done,function (id_user,err) {
+              if(err) { db_handler.sendError(Cons.ERROR_SAVE_USER,res,done,500);
+              } else {
+                if (has_interests) {
+                  processInterests(valid_interests, function(category,value) {
+                    saveInterests(res,client,done,id_user,category,value);
+                  });
+                }
+                devolverUser(req,res,id_user,done,valid_interests);
               }
-              devolverUser(req,res,id_user,done,valid_interests);
             });
           }
         });
       }
+    }
+  });
+}
+
+db_handler.getUsers = function (req, res, param, client, done) {
+  //TODO: JOIN con tabla de users_interests
+  var query = client.query("SELECT * FROM users",function(err, result) {
+    done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+    if (err) {
+      db_handler.sendError(err,res,done,500);
+    } else {
+      query.on('row', function(row,result) {result.addRow(row);});
+      query.on('end', function(result) {
+        var respuesta = json_handler.armarJsonListaUsuarios(result);
+        res.json(respuesta).end();
+      })
     }
   });
 }
@@ -256,19 +277,17 @@ db_handler.updatePhoto = function (req, res, usrID, client, done) {
 }
 
 db_handler.sendError = function (err, res, done, status) {
-  if (done) {
-    done();
-  }
   console.log(err);
+  if (done) {done();}
   res.json({succes: false, error: err}).status(status).end();
 }
 
 db_handler.queryExitosa = function (err, result, res, done) {
   if (err) {
-    return db_handler.sendError(err,res,done,500);
+    db_handler.sendError(err,res,done,500);
   } else {
     done();
-    return res.sendStatus(200).end();
+    res.sendStatus(200).end();
   }
 }
 
