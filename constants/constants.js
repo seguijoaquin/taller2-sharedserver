@@ -32,6 +32,8 @@ module.exports = Object.freeze({
 
     QUERY_GET_INTERESTS: "SELECT * FROM interests",
 
+    QUERY_CREATE_INTEREST: "INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",
+
     QUERY_SELECT_EMAILS: "SELECT * FROM users WHERE email=($1)",
 
     QUERY_GET_USERS: "SELECT * FROM users",
@@ -50,7 +52,7 @@ module.exports = Object.freeze({
 
     QUERY_GET_CATEGORIES: "SELECT * FROM categories WHERE category=($1)",
 
-    
+
 
     //----------------------------- DIRECTORIOS DEL SERVER - USERS -----------------------------
 

@@ -30,7 +30,6 @@ function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
     client.query(Cons.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
-      //done(); TODO: REVISAR si hay que llamar a done
       if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
       else {
         if (hayResultado(result)) {
@@ -43,14 +42,14 @@ function getValidCategories (interests,client,done,valid_categories,cb) {
 }
 
 function processInterests(valid_interests,cb) {
+  //Por cada interes valido llamo separadamente a una instancia de saveInterests
   for (var i in valid_interests) {
     cb(valid_interests[i].category,valid_interests[i].value);
   }
 }
 
 function createInterest(res,client,done,category,value,cb) {
-  var query = client.query("INSERT INTO interests (category,value) values ($1,$2) RETURNING id_interest",[category,value],function(err,result){
-    //done();
+  var query = client.query(Cons.QUERY_CREATE_INTEREST,[category,value],function(err,result){
     if (err) { cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
     } else {
       cb(result.rows[0].id_interest,err);
@@ -60,7 +59,6 @@ function createInterest(res,client,done,category,value,cb) {
 
 function saveInterests(res,client,done,id_user,category,value) {
   client.query(Cons.QUERY_SELECT_ONE_INTEREST,[category,value], function(err,result){
-    //done();
     if (err) {sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
       if (hayResultado(result)) {
@@ -82,8 +80,6 @@ function saveInterests(res,client,done,id_user,category,value) {
 
 function save_one_interest(res,client,done,id_user,id_interest) {
   client.query(Cons.QUERY_SAVE_ONE_INTEREST,[id_user,id_interest],function(err,result){
-    //done(); TODO:REVISAR si corresponde llamar
-    //console.log(result);
     if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
   });
 }
@@ -144,7 +140,6 @@ function saveUser(req,res,client,done,cb) {
     if (err) {
       cb(id_user,err);
     } else {
-      //done(); TODO: REVISAR si hay que llamarlo
       id_user = result.rows[0].id_user;
       cb(id_user,err);
     }
@@ -186,10 +181,8 @@ db_handler.addInterest = function (req, res, param, client, done) {
 }
 
 db_handler.addUser = function(req, res, param, client, done) {
-  //var email = req.body.user.email;
-  var email = "";
+  var email = req.body.user.email;
   var check_query = client.query(Cons.QUERY_SELECT_EMAILS,[email],function (err, check_result) {
-    //done(); //No se si es necesario llamarlo si todavia hay que hacer querys
     //Si existe error al consultar por email
     if (err) { sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
@@ -222,7 +215,7 @@ db_handler.addUser = function(req, res, param, client, done) {
 db_handler.getUsers = function (req, res, param, client, done) {
   //TODO: JOIN con tabla de users_interests
   var query = client.query(Cons.QUERY_GET_USERS,function(err, result) {
-    done(); //Devuelvo el cliente al pool xq no necesito más la conexion
+    done();
     if (err) {
       sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
