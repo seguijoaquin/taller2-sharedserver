@@ -12,7 +12,7 @@ var db_handler = {}
 db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
     if (err) {
-      db_handler.sendError(err,res,done,500);
+      sendError(err,res,done,Cons.ERROR_CONNECTION);
     } else {
       next.set_ClientDone(client,done);
       next.launch();
@@ -29,11 +29,11 @@ db_handler.atenderQuery = function (req, res, next) {
 function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
-    client.query("SELECT * FROM categories WHERE category=($1)",[interests[i].category], function(err,result){
+    client.query(Cons.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
       //done(); TODO: REVISAR si hay que llamar a done
-      if (err) {db_handler.sendError(err,res,done,500);}
+      if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
       else {
-        if (result.rowCount > 0) {
+        if (hayResultado(result)) {
           valid_categories.push(result.rows[0]);
         }
         if(++checked == interests.length) cb(valid_categories);
@@ -59,11 +59,11 @@ function createInterest(res,client,done,category,value,cb) {
 }
 
 function saveInterests(res,client,done,id_user,category,value) {
-  client.query("SELECT * FROM interests WHERE category=($1) AND value=($2)",[category,value], function(err,result){
+  client.query(Cons.QUERY_SELECT_ONE_INTEREST,[category,value], function(err,result){
     //done();
-    if (err) {db_handler.sendError(err,res,done,500);
+    if (err) {sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
-      if (result.rowCount > 0) {
+      if (hayResultado(result)) {
         //Si el interes ya existe, obtengo el id_interest y lo inserto en users_interests
         save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
       } else {
@@ -81,10 +81,10 @@ function saveInterests(res,client,done,id_user,category,value) {
 }
 
 function save_one_interest(res,client,done,id_user,id_interest) {
-  client.query("INSERT INTO users_interests (id_user,id_interest) values ($1,$2)",[id_user,id_interest],function(err,result){
+  client.query(Cons.QUERY_SAVE_ONE_INTEREST,[id_user,id_interest],function(err,result){
     //done(); TODO:REVISAR si corresponde llamar
     //console.log(result);
-    if (err) {db_handler.sendError(err,res,done,500);}
+    if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
   });
 }
 
@@ -140,7 +140,7 @@ function saveUser(req,res,client,done,cb) {
   var interests = req.body.user.interests;
   var id_user = "";
 
-  client.query(Cons.QUERY_ALTA_USUARIO,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
+  client.query(Cons.QUERY_ADD_USER,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
     if (err) {
       cb(id_user,err);
     } else {
@@ -155,14 +155,14 @@ function devolverUser(req,res,id_user,done,valid_interests) {
   done();
   var usuario = json_handler.armarJsonUsuarioNuevo(req,id_user);
   usuario.user.interests = valid_interests;
-  res.json(usuario).status(201).end();
+  res.json(usuario).status(Cons.STATUS_CREATED).end();
 }
 
 db_handler.getInterests = function (req, res, param, client, done) {
-  var query = client.query("SELECT * FROM interests",function(err, result) {
+  var query = client.query(Cons.QUERY_GET_INTERESTS,function(err, result) {
     done();
     if (err) {
-      db_handler.sendError(err,res,done,500);
+      sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
       query.on('row', function(row,result) {result.addRow(row);});
       query.on('end', function (result) {
@@ -178,10 +178,9 @@ db_handler.addInterest = function (req, res, param, client, done) {
   var value = req.body.interests.value;
   createInterest(res,client,done,category,value,function(id_interest,err) {
     if (err) {
-      //db_handler.sendError(err,res,done,500);
-      console.error("Ocurrio un error");
+      sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
-      res.sendStatus(201).end();
+      res.sendStatus(Cons.STATUS_CREATED).end();
     }
   });
 }
@@ -189,21 +188,21 @@ db_handler.addInterest = function (req, res, param, client, done) {
 db_handler.addUser = function(req, res, param, client, done) {
   //var email = req.body.user.email;
   var email = "";
-  var check_query = client.query("SELECT * FROM users WHERE email=($1)",[email],function (err, check_result) {
+  var check_query = client.query(Cons.QUERY_SELECT_EMAILS,[email],function (err, check_result) {
     //done(); //No se si es necesario llamarlo si todavia hay que hacer querys
     //Si existe error al consultar por email
-    if (err) { db_handler.sendError(err,res,done,500);
+    if (err) { sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
       //Si la consulta devuelve un email existente
-      if (check_result.rowCount > 0) {
-        db_handler.sendError(Cons.ERROR_EMAIL_ALREADY_EXISTS,res,done,500);
+      if (hayResultado(check_result)) {
+        sendError(Cons.ERROR_EMAIL_ALREADY_EXISTS,res,done,Cons.STATUS_ERROR);
       } else { //Si el email consultado no esta en la tabla users
         //Chequeo si hay intereses
         checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
-          if (err) { db_handler.sendError(err,res,done,500);
+          if (err) { sendError(err,res,done,Cons.STATUS_ERROR);
           } else {
             saveUser(req,res,client,done,function (id_user,err) {
-              if(err) { db_handler.sendError(Cons.ERROR_SAVE_USER,res,done,500);
+              if(err) { sendError(Cons.ERROR_SAVE_USER,res,done,Cons.STATUS_ERROR);
               } else {
                 if (has_interests) {
                   processInterests(valid_interests, function(category,value) {
@@ -222,16 +221,16 @@ db_handler.addUser = function(req, res, param, client, done) {
 
 db_handler.getUsers = function (req, res, param, client, done) {
   //TODO: JOIN con tabla de users_interests
-  var query = client.query("SELECT * FROM users",function(err, result) {
+  var query = client.query(Cons.QUERY_GET_USERS,function(err, result) {
     done(); //Devuelvo el cliente al pool xq no necesito más la conexion
     if (err) {
-      db_handler.sendError(err,res,done,500);
+      sendError(err,res,done,Cons.STATUS_ERROR);
     } else {
       query.on('row', function(row,result) {result.addRow(row);});
       query.on('end', function(result) {
         var respuesta = json_handler.armarJsonListaUsuarios(result);
         res.json(respuesta).end();
-      })
+      });
     }
   });
 }
@@ -241,53 +240,55 @@ db_handler.getUsers = function (req, res, param, client, done) {
 //Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
   var u = req.body.user;
-  var query = client.query("UPDATE users SET name=($1),email=($2),alias=($3),sex=($4),latitude=($5),longitude=($6) WHERE id_user=($7)",
-    [u.name, u.email,u.alias,u.sex, u.location.latitude,u.location.longitude, usrID],
-    function (err,result) {
-      db_handler.queryExitosa (err, result, res, done);
+  var query = client.query(Cons.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex, u.location.latitude,u.location.longitude, usrID],function (err,result) {
+      queryExitosa (err, result, res, done);
     });
 }
 
 db_handler.getUser = function (req, res, usrID, client, done) {
-  var query = client.query("SELECT * FROM users WHERE id_user = ($1)",[usrID],function (err,result) {
+  var query = client.query(Cons.QUERY_GET_ONE_USER,[usrID],function (err,result) {
     done();
-    //Si tiro un id que no existe, la query falla y entra por aca
-    if (err) { db_handler.sendError(err,res,done,404);}
-    if (result.rowCount) {
-      var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
-      res.json(jsonObject).end();
-    } else {
-      //No se por que nunca entra aca si hago una query con un id invalido!
-      res.sendStatus(404).end(); //User not found
+    if (err) { sendError(err,res,done,Cons.STATUS_NOT_FOUND);}
+    else {
+      if (hayResultado(result)) {
+        var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
+        res.json(jsonObject).end();
+      } else {
+        res.sendStatus(Cons.STATUS_NOT_FOUND).end(); //User not found
+      }
     }
-  })
+  });
 }
 
 db_handler.deleteUser = function (req, res, usrID, client, done) {
-  var query = client.query("DELETE FROM users WHERE id_user=($1)",[usrID],function (err, result) {
-    db_handler.queryExitosa(err,result,res, done);
+  var query = client.query(Cons.QUERY_DELETE_USER,[usrID],function (err, result) {
+    queryExitosa(err,result,res, done);
   });
 }
 
 db_handler.updatePhoto = function (req, res, usrID, client, done) {
   var photo = req.body.photo;
-  var query = client.query("UPDATE users SET photo_profile=($1) WHERE id_user=($2)",[photo,usrID], function (err, result) {
-    db_handler.queryExitosa(err,result,res,done);
+  var query = client.query(Cons.QUERY_UPDATE_PHOTO_PROFILE,[photo,usrID], function (err, result) {
+    queryExitosa(err,result,res,done);
   });
 }
 
-db_handler.sendError = function (err, res, done, status) {
+function hayResultado (result) {
+    return (result.rowCount > 0);
+}
+
+function sendError (err, res, done, status) {
   console.log(err);
   if (done) {done();}
   res.json({succes: false, error: err}).status(status).end();
 }
 
-db_handler.queryExitosa = function (err, result, res, done) {
+function queryExitosa (err, result, res, done) {
   if (err) {
-    db_handler.sendError(err,res,done,500);
+    sendError(err,res,done,Cons.STATUS_ERROR);
   } else {
     done();
-    res.sendStatus(200).end();
+    res.sendStatus(Cons.STATUS_SUCCESS).end();
   }
 }
 

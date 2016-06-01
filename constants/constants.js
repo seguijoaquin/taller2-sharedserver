@@ -10,28 +10,47 @@ module.exports = Object.freeze({
 
     ERROR_MSG_PG_CONNECT: "[ERROR: No se pudo realizar la conexion a la base de datos]",
 
-    ERROR_MSG_DB_TABLA_INEXISTENTE: "[ERROR: La tabla consultada es inexistente.]",
-
-    CODE_TABLA_INEXISTENTE: '42P01',
-
     ERROR_MSG_INVALID_USER: "[ERROR: El usuario es invalido]",
 
     ERROR_EMAIL_ALREADY_EXISTS: "[ERROR: El email ya se encuentra registrado]",
 
+    ERROR_SAVE_USER: "[ERROR: No se pudo guardar el usuario]",
 
+    // ---------------------------- STATUS ----------------------------------------
+
+    STATUS_SUCCESS: 200,
+
+    STATUS_ERROR: 500,
+
+    STATUS_NOT_FOUND: 404,
+
+    STATUS_CREATED: 201,
 
     // ---------------------------- QUERYS ----------------------------------------
 
-    QUERY_LISTADO_USUARIOS: "SELECT * FROM usuarios",
+    QUERY_ADD_USER: "INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
 
-    QUERY_ALTA_USUARIO: "INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
+    QUERY_GET_INTERESTS: "SELECT * FROM interests",
 
-    QUERY_CONSULTA_PERFIL_USUARIO: "SELECT * FROM usuarios WHERE id = ($1)",
+    QUERY_SELECT_EMAILS: "SELECT * FROM users WHERE email=($1)",
 
-    QUERY_MODIFICACION_PERFIL_USUARIO: "UPDATE usuarios SET name = ($1), email = ($2), alias = ($3), latitude = ($4), longitude = ($5) WHERE id = ($6)",
+    QUERY_GET_USERS: "SELECT * FROM users",
 
-    QUERY_BAJA_DE_USUARIO: "DELETE FROM usuarios WHERE id = ($1)",
+    QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4),latitude=($5),longitude=($6) WHERE id_user=($7)",
 
+    QUERY_GET_ONE_USER: "SELECT * FROM users WHERE id_user = ($1)",
+
+    QUERY_DELETE_USER: "DELETE FROM users WHERE id_user=($1)",
+
+    QUERY_UPDATE_PHOTO_PROFILE: "UPDATE users SET photo_profile=($1) WHERE id_user=($2)",
+
+    QUERY_SAVE_ONE_INTEREST: "INSERT INTO users_interests (id_user,id_interest) values ($1,$2)",
+
+    QUERY_SELECT_ONE_INTEREST: "SELECT * FROM interests WHERE category=($1) AND value=($2)",
+
+    QUERY_GET_CATEGORIES: "SELECT * FROM categories WHERE category=($1)",
+
+    
 
     //----------------------------- DIRECTORIOS DEL SERVER - USERS -----------------------------
 
