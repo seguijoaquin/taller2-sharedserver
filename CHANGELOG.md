@@ -2,6 +2,39 @@
 
 ## [Unreleased](https://github.com/seguijoaquin/taller2-sharedserver/tree/HEAD)
 
+[Full Changelog](https://github.com/seguijoaquin/taller2-sharedserver/compare/v1.0.0...HEAD)
+
+**Implemented enhancements:**
+
+- Refactorizar db\_handler con returns [\#29](https://github.com/seguijoaquin/taller2-sharedserver/issues/29)
+- Agregar funcionalidad para manejar la edad [\#27](https://github.com/seguijoaquin/taller2-sharedserver/issues/27)
+- Modificar modulo de constantes e incluirlo en db\_handler [\#25](https://github.com/seguijoaquin/taller2-sharedserver/issues/25)
+- Refactor db\_handler con manejo de errores mas prolijo y merge con master [\#24](https://github.com/seguijoaquin/taller2-sharedserver/issues/24)
+- Verificar que los intereses de un usuario existan [\#23](https://github.com/seguijoaquin/taller2-sharedserver/issues/23)
+- Unificar reporte de errores en modulo users.js [\#22](https://github.com/seguijoaquin/taller2-sharedserver/issues/22)
+- Unificar el reporte de errores [\#20](https://github.com/seguijoaquin/taller2-sharedserver/issues/20)
+- Implementar alta de intereses [\#19](https://github.com/seguijoaquin/taller2-sharedserver/issues/19)
+- Implementar listado de intereses [\#18](https://github.com/seguijoaquin/taller2-sharedserver/issues/18)
+- Actualizar Readme [\#17](https://github.com/seguijoaquin/taller2-sharedserver/issues/17)
+- Merge branch feature\_modularizar\_DB [\#14](https://github.com/seguijoaquin/taller2-sharedserver/issues/14)
+- Abstraer el llamado de funciones callbacks al procesar un request a la base de datos [\#11](https://github.com/seguijoaquin/taller2-sharedserver/issues/11)
+- Modularizar el manejo de archivos JSON [\#10](https://github.com/seguijoaquin/taller2-sharedserver/issues/10)
+- Modularizar las llamadas a la base de datos [\#9](https://github.com/seguijoaquin/taller2-sharedserver/issues/9)
+- Validar unicidad de usuarios por email ante un alta [\#3](https://github.com/seguijoaquin/taller2-sharedserver/issues/3)
+
+**Fixed bugs:**
+
+- getUser con usuario inexistente devuelve 200 [\#32](https://github.com/seguijoaquin/taller2-sharedserver/issues/32)
+- El alta de un usuario devuelve un status code 200 [\#30](https://github.com/seguijoaquin/taller2-sharedserver/issues/30)
+- Listar intereses no devuelve los campos category y value [\#21](https://github.com/seguijoaquin/taller2-sharedserver/issues/21)
+- Modificación de la estructura de la DB para facilitar consultas [\#7](https://github.com/seguijoaquin/taller2-sharedserver/issues/7)
+
+**Closed issues:**
+
+- Funcionalidad para actulizar la foto de perfil de un usuario [\#15](https://github.com/seguijoaquin/taller2-sharedserver/issues/15)
+- Crear un Docker con el shared y una base de postgre local para hacer las pruebas. [\#8](https://github.com/seguijoaquin/taller2-sharedserver/issues/8)
+
+## [v1.0.0](https://github.com/seguijoaquin/taller2-sharedserver/tree/v1.0.0) (2016-04-28)
 **Implemented enhancements:**
 
 - Unificar la conexión a la DB en un módulo aparte [\#5](https://github.com/seguijoaquin/taller2-sharedserver/issues/5)
