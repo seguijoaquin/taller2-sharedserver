@@ -124,12 +124,13 @@ function saveUser(req,res,client,done,cb) {
   var email = req.body.user.email;
   var alias = req.body.user.alias;
   var sex = req.body.user.sex;
+  var edad = req.body.user.edad;
   var latitude = req.body.user.location.latitude;
   var longitude = req.body.user.location.longitude;
   var interests = req.body.user.interests;
   var id_user = "";
 
-  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
+  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,edad,latitude,longitude,photo_profile],function(err, result) {
     if (err) {
       cb(id_user,err);
     } else {
@@ -209,7 +210,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
 //Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
   var u = req.body.user;
-  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.location.latitude,u.location.longitude, usrID],function (err,result) {
+  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.edad,u.location.latitude,u.location.longitude, usrID],function (err,result) {
       queryExitosa (err, result, res, done);
     });
 }
@@ -229,6 +230,7 @@ db_handler.getUser = function (req, res, usrID, client, done) {
         usuario.user.alias = row.alias;
         usuario.user.email = row.email;
         usuario.user.sex = row.sex;
+        usuario.user.edad = row.edad;
         usuario.user.photo_profile = row.photo_profile;
         usuario.user.location.latitude = row.latitude;
         usuario.user.location.longitude = row.longitude;
@@ -236,8 +238,8 @@ db_handler.getUser = function (req, res, usrID, client, done) {
       }
       usuario.user.interests.push({category:row.category,value:row.value});
     });
-    query.on('end',function(){
-      res.json(usuario).end();
+    query.on('end',function(result){
+      if (hayResultado(result)) res.json(usuario).end();
     });
   });
 }
@@ -262,7 +264,7 @@ function hayResultado (result) {
 function sendError (err, res, done, status) {
   console.log(err);
   if (done) {done();}
-  res.json({succes: false, error: err}).status(status).end();
+  res.status(status).json({succes: false, error: err}).end();
 }
 
 function queryExitosa (err, result, res, done) {

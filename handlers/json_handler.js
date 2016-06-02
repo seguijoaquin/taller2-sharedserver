@@ -1,4 +1,4 @@
-var Constants = require('../constants/constants.js');
+var C = require('../constants/constants.js');
 
 var json_handler = {}
 
@@ -10,7 +10,7 @@ var json_handler = {}
  * segun la especificacion de la API
  */
 json_handler.armarJsonListaUsuarios = function(result,cb) {
-  var jsonObject = { "users" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
+  var jsonObject = { "users" : [] , metadata : { version : C.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneUser = {
       user : {
@@ -19,6 +19,7 @@ json_handler.armarJsonListaUsuarios = function(result,cb) {
         alias : result.rows[i].alias,
         email : result.rows[i].email,
         sex : result.rows[i].sex,
+        edad : result.rows[i].edad,
         photo_profile: "http://t2shared.herokuapp.com/users/"+result.rows[i].id_user+"/photo",
         interests: [],
         location : {
@@ -39,7 +40,7 @@ json_handler.armarJsonListaUsuarios = function(result,cb) {
  * segun la especificacion de la API
  */
 json_handler.armarJsonListaIntereses = function(result,cb) {
-  var jsonObject = { "interests" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
+  var jsonObject = { "interests" : [] , metadata : { version : C.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneInterest = {
       category : result.rows[i].category,
@@ -56,50 +57,19 @@ json_handler.armarJsonListaIntereses = function(result,cb) {
  * hay que devolver del usuario recien creado
  */
 json_handler.armarJsonUsuarioNuevo = function(req,id_user,valid_interests,cb) {
-  var jsonObject = {
-    user : {
-      id : id_user,
-      name : req.body.user.name,
-      alias : req.body.user.alias,
-      email : req.body.user.email,
-      sex : req.body.user.sex,
-      interests: valid_interests,
-      location : {
-        latitude : req.body.user.location.latitude,
-        longitude : req.body.user.location.longitude
-      }
-    },
-    metadata : {
-      version : Constants.METADATA_VERSION
-    }
-  }
-  cb(jsonObject);
-}
-
-/*
- * Recibo el resultado de una query sobre la tabla users
- * que me devuelve un usuario de la tabla
- * y armo un objeto JSON con los campos necesarios para devolver
- * segun la especificacion de la API
- */
-json_handler.armarJsonUsuarioConsultado = function (result,cb) {
-  var jsonObject = {
-    user : {
-      name : result.rows[0].name,
-      alias : result.rows[0].alias,
-      email : result.rows[0].email,
-      sex : result.rows[0].sex,
-      photo_profile : result.rows[0].photo_profile,
-      location : {
-        latitude : result.rows[0].latitude,
-        longitude : result.rows[0].longitude
-      }
-    },
-    metadata : {
-      version : Constants.METADATA_VERSION
-    }
-  }
-  cb(jsonObject);
+  json_handler.armarUsuarioVacio(function(usuario){
+    usuario.user.id = id_user;
+    usuario.user.name = req.body.user.name;
+    usuario.user.alias = req.body.user.alias;
+    usuario.user.email = req.body.user.email;
+    usuario.user.sex = req.body.user.sex;
+    usuario.user.edad = req.body.user.edad;
+    usuario.user.photo_profile = "no_photo";
+    usuario.user.interests = valid_interests;
+    usuario.user.location.latitude = req.body.user.location.latitude;
+    usuario.user.location.longitude = req.body.user.location.longitude;
+    cb(usuario);
+  });
 }
 
 json_handler.armarUsuarioVacio = function (cb) {
@@ -111,13 +81,15 @@ json_handler.armarUsuarioVacio = function (cb) {
         alias:null,
         email:null,
         sex:null,
+        edad: null,
         photo_profile:null,
         interests:[],
         location:{latitude:null,longitude:null}
       },
-    metadata:Constants.METADATA_VERSION
+      metadata : {
+        version : C.METADATA_VERSION
+      }
   };
-
   cb(usuario);
 }
 

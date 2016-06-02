@@ -7,12 +7,8 @@ var db_handler = require('../handlers/db_handler.js');
 
 function validarUsuario(req) {
   var u = req.body.user;
-  if (u.name && u.email && u.alias && u.sex && u.location.longitude && u.location.latitude ) {
-    if (u.sex == 'F' || u.sex == 'M') {
-      return true;
-    }
-  }
-  return false;
+  //TODO: Validar formato de campo sex
+  return (u.name && u.email && u.alias && u.sex && u.edad && u.location.longitude && u.location.latitude);
 }
 
 function sendError(err,res,status) {

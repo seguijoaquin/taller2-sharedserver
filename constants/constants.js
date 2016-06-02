@@ -30,7 +30,7 @@ module.exports = Object.freeze({
 
     // ---------------------------- QUERYS ----------------------------------------
 
-    QUERY_ADD_USER: "INSERT INTO users (name,email,alias,sex,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7) RETURNING id_user",
+    QUERY_ADD_USER: "INSERT INTO users (name,email,alias,sex,edad,latitude,longitude,photo_profile) values($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id_user",
 
     QUERY_GET_INTERESTS: "SELECT * FROM interests",
 
@@ -40,7 +40,7 @@ module.exports = Object.freeze({
 
     QUERY_GET_USERS: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest)",
 
-    QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4),latitude=($5),longitude=($6) WHERE id_user=($7)",
+    QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4), edad=($5),latitude=($6),longitude=($7) WHERE id_user=($8)",
 
     QUERY_GET_ONE_USER: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) WHERE users.id_user = ($1)",
 
