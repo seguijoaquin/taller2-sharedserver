@@ -16,6 +16,8 @@ module.exports = Object.freeze({
 
     ERROR_SAVE_USER: "[ERROR: No se pudo guardar el usuario]",
 
+    USER_NOT_FOUND: "[ERROR: No se encuentra el usuario]",
+
     // ---------------------------- STATUS ----------------------------------------
 
     STATUS_SUCCESS: 200,
@@ -36,11 +38,11 @@ module.exports = Object.freeze({
 
     QUERY_SELECT_EMAILS: "SELECT * FROM users WHERE email=($1)",
 
-    QUERY_GET_USERS: "SELECT * FROM users",
+    QUERY_GET_USERS: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest)",
 
     QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4),latitude=($5),longitude=($6) WHERE id_user=($7)",
 
-    QUERY_GET_ONE_USER: "SELECT * FROM users WHERE id_user = ($1)",
+    QUERY_GET_ONE_USER: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) WHERE users.id_user = ($1)",
 
     QUERY_DELETE_USER: "DELETE FROM users WHERE id_user=($1)",
 

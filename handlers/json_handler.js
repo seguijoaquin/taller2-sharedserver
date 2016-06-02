@@ -9,7 +9,7 @@ var json_handler = {}
  * y armo un objeto JSON con los campos necesarios para devolver
  * segun la especificacion de la API
  */
-json_handler.armarJsonListaUsuarios = function(result) {
+json_handler.armarJsonListaUsuarios = function(result,cb) {
   var jsonObject = { "users" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneUser = {
@@ -29,7 +29,7 @@ json_handler.armarJsonListaUsuarios = function(result) {
     }
     jsonObject.users.push(oneUser);
   }
-  return jsonObject;
+  cb(jsonObject);
 }
 
 /*
@@ -38,7 +38,7 @@ json_handler.armarJsonListaUsuarios = function(result) {
  * y armo un objeto JSON con los campos necesarios para devolver
  * segun la especificacion de la API
  */
-json_handler.armarJsonListaIntereses = function(result) {
+json_handler.armarJsonListaIntereses = function(result,cb) {
   var jsonObject = { "interests" : [] , metadata : { version : Constants.METADATA_VERSION , count : result.rowCount}}
   for (var i = 0; i < result.rowCount; i++) {
     var oneInterest = {
@@ -47,7 +47,7 @@ json_handler.armarJsonListaIntereses = function(result) {
     }
     jsonObject.interests.push(oneInterest);
   }
-  return jsonObject;
+  cb(jsonObject);
 }
 
 /*
@@ -55,7 +55,7 @@ json_handler.armarJsonListaIntereses = function(result) {
  * un JSON que contenga los campos que especifica la API que
  * hay que devolver del usuario recien creado
  */
-json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
+json_handler.armarJsonUsuarioNuevo = function(req,id_user,valid_interests,cb) {
   var jsonObject = {
     user : {
       id : id_user,
@@ -63,6 +63,7 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
       alias : req.body.user.alias,
       email : req.body.user.email,
       sex : req.body.user.sex,
+      interests: valid_interests,
       location : {
         latitude : req.body.user.location.latitude,
         longitude : req.body.user.location.longitude
@@ -72,7 +73,7 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
       version : Constants.METADATA_VERSION
     }
   }
-  return jsonObject;
+  cb(jsonObject);
 }
 
 /*
@@ -81,7 +82,7 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user) {
  * y armo un objeto JSON con los campos necesarios para devolver
  * segun la especificacion de la API
  */
-json_handler.armarJsonUsuarioConsultado = function (result) {
+json_handler.armarJsonUsuarioConsultado = function (result,cb) {
   var jsonObject = {
     user : {
       name : result.rows[0].name,
@@ -98,7 +99,26 @@ json_handler.armarJsonUsuarioConsultado = function (result) {
       version : Constants.METADATA_VERSION
     }
   }
-  return jsonObject;
+  cb(jsonObject);
+}
+
+json_handler.armarUsuarioVacio = function (cb) {
+  var usuario = {
+    user:
+      {
+        id: null,
+        name:null,
+        alias:null,
+        email:null,
+        sex:null,
+        photo_profile:null,
+        interests:[],
+        location:{latitude:null,longitude:null}
+      },
+    metadata:Constants.METADATA_VERSION
+  };
+
+  cb(usuario);
 }
 
 

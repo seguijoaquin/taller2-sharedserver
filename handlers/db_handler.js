@@ -1,9 +1,9 @@
 var pg = require('pg');
 var json_handler = require('./json_handler');
-var Cons = require('../constants/constants.js');
+var C = require('../constants/constants.js');
 var cb_handler = require('./cb_handler.js');
 
-var urlDB = Cons.POSTGRE_URL_DB;
+var urlDB = C.POSTGRE_URL_DB;
 
 pg.defaults.ssl = true;
 
@@ -11,12 +11,10 @@ var db_handler = {}
 
 db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
-    if (err) {
-      sendError(err,res,done,Cons.ERROR_CONNECTION);
-    } else {
-      next.set_ClientDone(client,done);
-      next.launch();
-    }
+    if (err) return sendError(err,res,done,C.ERROR_CONNECTION);
+
+    next.set_ClientDone(client,done);
+    next.launch();
   });
 };
 
@@ -29,14 +27,11 @@ db_handler.atenderQuery = function (req, res, next) {
 function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
-    client.query(Cons.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
-      if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
-      else {
-        if (hayResultado(result)) {
-          valid_categories.push(result.rows[0]);
-        }
-        if(++checked == interests.length) cb(valid_categories);
-      }
+    client.query(C.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
+      if (err) return sendError(err,res,done,C.STATUS_ERROR);
+
+      if (hayResultado(result)) valid_categories.push(result.rows[0]);
+      if(++checked == interests.length) cb(valid_categories);
     });
   }
 }
@@ -49,38 +44,36 @@ function processInterests(valid_interests,cb) {
 }
 
 function createInterest(res,client,done,category,value,cb) {
-  var query = client.query(Cons.QUERY_CREATE_INTEREST,[category,value],function(err,result){
-    if (err) { cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
-    } else {
-      cb(result.rows[0].id_interest,err);
-    }
+  var query = client.query(C.QUERY_CREATE_INTEREST,[category,value],function(err,result){
+    if (err) cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
+
+    cb(result.rows[0].id_interest,err);
   });
 }
 
 function saveInterests(res,client,done,id_user,category,value) {
-  client.query(Cons.QUERY_SELECT_ONE_INTEREST,[category,value], function(err,result){
-    if (err) {sendError(err,res,done,Cons.STATUS_ERROR);
+  client.query(C.QUERY_SELECT_ONE_INTEREST,[category,value], function(err,result){
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+
+    if (hayResultado(result)) {
+      //Si el interes ya existe, obtengo el id_interest y lo inserto en users_interests
+      save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
     } else {
-      if (hayResultado(result)) {
-        //Si el interes ya existe, obtengo el id_interest y lo inserto en users_interests
-        save_one_interest(res,client,done,id_user,result.rows[0].id_interest);
-      } else {
-        //Si no existe, lo creo para obtener el id_interest e insertarlo en users_interests
-        createInterest(res,client,done,category,value,function (id_interest,err) {
-          if (err) {
-            console.error(err);
-          } else {
-            save_one_interest(res,client,done,id_user,id_interest);
-          }
-        });
-      }
+      //Si no existe, lo creo para obtener el id_interest e insertarlo en users_interests
+      createInterest(res,client,done,category,value,function (id_interest,err) {
+        if (err) {
+          console.error(err);
+        } else {
+          save_one_interest(res,client,done,id_user,id_interest);
+        }
+      });
     }
   });
 }
 
 function save_one_interest(res,client,done,id_user,id_interest) {
-  client.query(Cons.QUERY_SAVE_ONE_INTEREST,[id_user,id_interest],function(err,result){
-    if (err) {sendError(err,res,done,Cons.STATUS_ERROR);}
+  client.query(C.QUERY_SAVE_ONE_INTEREST,[id_user,id_interest],function(err,result){
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
   });
 }
 
@@ -136,7 +129,7 @@ function saveUser(req,res,client,done,cb) {
   var interests = req.body.user.interests;
   var id_user = "";
 
-  client.query(Cons.QUERY_ADD_USER,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
+  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,latitude,longitude,photo_profile],function(err, result) {
     if (err) {
       cb(id_user,err);
     } else {
@@ -148,23 +141,21 @@ function saveUser(req,res,client,done,cb) {
 
 function devolverUser(req,res,id_user,done,valid_interests) {
   done();
-  var usuario = json_handler.armarJsonUsuarioNuevo(req,id_user);
-  usuario.user.interests = valid_interests;
-  res.json(usuario).status(Cons.STATUS_CREATED).end();
+  json_handler.armarJsonUsuarioNuevo(req,id_user,valid_interests,function(usuario) {
+      res.status(C.STATUS_CREATED).json(usuario).end();
+  });
 }
 
 db_handler.getInterests = function (req, res, param, client, done) {
-  var query = client.query(Cons.QUERY_GET_INTERESTS,function(err, result) {
+  var query = client.query(C.QUERY_GET_INTERESTS,function(err, result) {
     done();
-    if (err) {
-      sendError(err,res,done,Cons.STATUS_ERROR);
-    } else {
-      query.on('row', function(row,result) {result.addRow(row);});
-      query.on('end', function (result) {
-        var respuesta = json_handler.armarJsonListaIntereses(result);
-        res.json(respuesta).end();
-      })
-    }
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+
+    query.on('end', function (result) {
+      json_handler.armarJsonListaIntereses(result,function(respuesta){
+        return res.json(respuesta).end();
+      });
+    });
   });
 }
 
@@ -172,59 +163,44 @@ db_handler.addInterest = function (req, res, param, client, done) {
   var category = req.body.interests.category;
   var value = req.body.interests.value;
   createInterest(res,client,done,category,value,function(id_interest,err) {
-    if (err) {
-      sendError(err,res,done,Cons.STATUS_ERROR);
-    } else {
-      res.sendStatus(Cons.STATUS_CREATED).end();
-    }
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+
+    res.sendStatus(C.STATUS_CREATED).end();
   });
 }
 
 db_handler.addUser = function(req, res, param, client, done) {
   var email = req.body.user.email;
-  var check_query = client.query(Cons.QUERY_SELECT_EMAILS,[email],function (err, check_result) {
+  var check_query = client.query(C.QUERY_SELECT_EMAILS,[email],function (err, check_result) {
     //Si existe error al consultar por email
-    if (err) { sendError(err,res,done,Cons.STATUS_ERROR);
-    } else {
-      //Si la consulta devuelve un email existente
-      if (hayResultado(check_result)) {
-        sendError(Cons.ERROR_EMAIL_ALREADY_EXISTS,res,done,Cons.STATUS_ERROR);
-      } else { //Si el email consultado no esta en la tabla users
-        //Chequeo si hay intereses
-        checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
-          if (err) { sendError(err,res,done,Cons.STATUS_ERROR);
-          } else {
-            saveUser(req,res,client,done,function (id_user,err) {
-              if(err) { sendError(Cons.ERROR_SAVE_USER,res,done,Cons.STATUS_ERROR);
-              } else {
-                if (has_interests) {
-                  processInterests(valid_interests, function(category,value) {
-                    saveInterests(res,client,done,id_user,category,value);
-                  });
-                }
-                devolverUser(req,res,id_user,done,valid_interests);
-              }
-            });
-          }
-        });
-      }
-    }
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+    //Si la consulta devuelve un email existente
+    if (hayResultado(check_result)) return sendError(C.ERROR_EMAIL_ALREADY_EXISTS,res,done,C.STATUS_ERROR);
+    //Si el email consultado no esta en la tabla users
+    //Chequeo si hay intereses
+    checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
+      if (err) return sendError(err,res,done,C.STATUS_ERROR);
+      saveUser(req,res,client,done,function (id_user,err) {
+        if(err) return sendError(C.ERROR_SAVE_USER,res,done,C.STATUS_ERROR);
+        if (has_interests) {
+          processInterests(valid_interests, function(category,value) {
+            saveInterests(res,client,done,id_user,category,value);
+          });
+        }
+        devolverUser(req,res,id_user,done,valid_interests);
+      });
+    });
   });
 }
 
 db_handler.getUsers = function (req, res, param, client, done) {
-  //TODO: JOIN con tabla de users_interests
-  var query = client.query(Cons.QUERY_GET_USERS,function(err, result) {
+  var query = client.query(C.QUERY_GET_USERS,function(err, result) {
     done();
-    if (err) {
-      sendError(err,res,done,Cons.STATUS_ERROR);
-    } else {
-      query.on('row', function(row,result) {result.addRow(row);});
-      query.on('end', function(result) {
-        var respuesta = json_handler.armarJsonListaUsuarios(result);
-        res.json(respuesta).end();
-      });
-    }
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+
+    json_handler.armarJsonListaUsuarios(result,function(respuesta){
+      res.json(respuesta).end();
+    });
   });
 }
 
@@ -233,35 +209,48 @@ db_handler.getUsers = function (req, res, param, client, done) {
 //Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
   var u = req.body.user;
-  var query = client.query(Cons.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex, u.location.latitude,u.location.longitude, usrID],function (err,result) {
+  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.location.latitude,u.location.longitude, usrID],function (err,result) {
       queryExitosa (err, result, res, done);
     });
 }
 
 db_handler.getUser = function (req, res, usrID, client, done) {
-  var query = client.query(Cons.QUERY_GET_ONE_USER,[usrID],function (err,result) {
+  var query = client.query(C.QUERY_GET_ONE_USER,[usrID],function (err,result) {
     done();
-    if (err) { sendError(err,res,done,Cons.STATUS_NOT_FOUND);}
-    else {
-      if (hayResultado(result)) {
-        var jsonObject = json_handler.armarJsonUsuarioConsultado(result);
-        res.json(jsonObject).end();
-      } else {
-        res.sendStatus(Cons.STATUS_NOT_FOUND).end(); //User not found
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+    if (!hayResultado(result)) return sendError(C.USER_NOT_FOUND,res,done,C.STATUS_NOT_FOUND); //User not found
+  });
+
+  json_handler.armarUsuarioVacio(function(usuario){
+    query.on('row',function(row,result){
+      //Verifico que un campo no sea null para no sobreescribir en cada iteracion
+      if(usuario.user.name == null) {
+        usuario.user.name = row.name;
+        usuario.user.alias = row.alias;
+        usuario.user.email = row.email;
+        usuario.user.sex = row.sex;
+        usuario.user.photo_profile = row.photo_profile;
+        usuario.user.location.latitude = row.latitude;
+        usuario.user.location.longitude = row.longitude;
+        usuario.user.id = row.id_user;
       }
-    }
+      usuario.user.interests.push({category:row.category,value:row.value});
+    });
+    query.on('end',function(){
+      res.json(usuario).end();
+    });
   });
 }
 
 db_handler.deleteUser = function (req, res, usrID, client, done) {
-  var query = client.query(Cons.QUERY_DELETE_USER,[usrID],function (err, result) {
+  var query = client.query(C.QUERY_DELETE_USER,[usrID],function (err, result) {
     queryExitosa(err,result,res, done);
   });
 }
 
 db_handler.updatePhoto = function (req, res, usrID, client, done) {
   var photo = req.body.photo;
-  var query = client.query(Cons.QUERY_UPDATE_PHOTO_PROFILE,[photo,usrID], function (err, result) {
+  var query = client.query(C.QUERY_UPDATE_PHOTO_PROFILE,[photo,usrID], function (err, result) {
     queryExitosa(err,result,res,done);
   });
 }
@@ -277,12 +266,9 @@ function sendError (err, res, done, status) {
 }
 
 function queryExitosa (err, result, res, done) {
-  if (err) {
-    sendError(err,res,done,Cons.STATUS_ERROR);
-  } else {
-    done();
-    res.sendStatus(Cons.STATUS_SUCCESS).end();
-  }
+  if (err) return sendError(err,res,done,C.STATUS_ERROR);
+  done();
+  res.sendStatus(C.STATUS_SUCCESS).end();
 }
 
 module.exports = db_handler;
