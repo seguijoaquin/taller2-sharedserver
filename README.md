@@ -42,4 +42,4 @@ To download a specific remote branch and set to track it
 
 ### PostgreSQL
 
-(Completar con info de tablas y cómo se crearon las tablas)
+Información sobre la configuración de la base de datos [aquí](https://github.com/seguijoaquin/taller2-sharedserver/blob/master/DB_README.md)
