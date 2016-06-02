@@ -7,7 +7,7 @@ pictures:
 interests:
 users_interests:
 
-## Se define un tipo de datos ENUM para definir el sexo en tabla users
+## Se define un tipo de datos ENUM para definir el sexo en tabla users(deprecated)
 
 > CREATE TYPE sex AS ENUM ('F','M');
 
@@ -18,7 +18,8 @@ users_interests:
 	name TEXT NOT NULL,
 	alias TEXT,
 	email TEXT NOT NULL,
-	sex sex NOT NULL,
+	sex TEXT NOT NULL,
+	edad INTEGER NOT NULL,
 	latitude REAL,
 	longitude REAL,
 	photo_profile TEXT
