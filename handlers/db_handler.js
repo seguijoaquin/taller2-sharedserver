@@ -171,7 +171,8 @@ db_handler.addInterest = function (req, res, param, client, done) {
 }
 
 db_handler.addUser = function(req, res, param, client, done) {
-  var email = req.body.user.email;
+  //TODO: Descomentar para validar unicidad de emails en alta
+  var email = ""; /*req.body.user.email;*/
   var check_query = client.query(C.QUERY_SELECT_EMAILS,[email],function (err, check_result) {
     //Si existe error al consultar por email
     if (err) return sendError(err,res,done,C.STATUS_ERROR);
