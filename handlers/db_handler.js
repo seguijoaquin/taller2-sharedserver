@@ -197,12 +197,34 @@ db_handler.addUser = function(req, res, param, client, done) {
 
 db_handler.getUsers = function (req, res, param, client, done) {
   var query = client.query(C.QUERY_GET_USERS,function(err, result) {
-    done();
     if (err) return sendError(err,res,done,C.STATUS_ERROR);
+  });
 
-    json_handler.armarJsonListaUsuarios(result,function(respuesta){
-      res.json(respuesta).end();
-    });
+  var lista_usuarios = {users:[],metadata: { version: C.METADATA_VERSION, count: 0}};
+  var usuario_nuevo;
+  var id_control;
+  query.on('row', function(row) {
+    if(id_control != row.id_user){
+      id_control = row.id_user;
+      usuario_nuevo = {user: {id: null,name: null,alias:null,email:null,sex:null,edad:null,photo_profile:null,interests:[],location:{latitude:null,longitude:null}}};
+      usuario_nuevo.user.id=row.id_user;
+      usuario_nuevo.user.name = row.name;
+      usuario_nuevo.user.alias = row.alias;
+      usuario_nuevo.user.email = row.email;
+      usuario_nuevo.user.sex = row.sex;
+      usuario_nuevo.user.edad = row.edad;
+      usuario_nuevo.user.photo_profile = "https://t2shared.herokuapp.com/users/"+id_control+"/photo";
+      usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+      usuario_nuevo.user.location.latitude = row.latitude;
+      usuario_nuevo.user.location.longitude = row.longitude;
+      lista_usuarios.users.push(usuario_nuevo);
+      lista_usuarios.metadata.count++;
+    }else usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+  });
+
+  query.on('end',function(){
+    done();
+    res.json(lista_usuarios).end();
   });
 }
 

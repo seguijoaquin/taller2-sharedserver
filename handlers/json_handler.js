@@ -2,37 +2,6 @@ var C = require('../constants/constants.js');
 
 var json_handler = {}
 
-//TODO : Agregar los intereses a los archivos JSON generados
-/*
- * Recibo el resultado de una query sobre la tabla users
- * que me devuelve todos los usuarios de la tabla
- * y armo un objeto JSON con los campos necesarios para devolver
- * segun la especificacion de la API
- */
-json_handler.armarJsonListaUsuarios = function(result,cb) {
-  var jsonObject = { "users" : [] , metadata : { version : C.METADATA_VERSION , count : result.rowCount}}
-  for (var i = 0; i < result.rowCount; i++) {
-    var oneUser = {
-      user : {
-        id : result.rows[i].id_user,
-        name : result.rows[i].name,
-        alias : result.rows[i].alias,
-        email : result.rows[i].email,
-        sex : result.rows[i].sex,
-        edad : result.rows[i].edad,
-        photo_profile: "http://t2shared.herokuapp.com/users/"+result.rows[i].id_user+"/photo",
-        interests: [],
-        location : {
-          latitude : result.rows[i].latitude,
-          longitude : result.rows[i].longitude
-        }
-      }
-    }
-    jsonObject.users.push(oneUser);
-  }
-  cb(jsonObject);
-}
-
 /*
  * Recibo el resultado de una query sobre la tabla users
  * que me devuelve todos los usuarios de la tabla
