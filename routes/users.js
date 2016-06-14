@@ -51,7 +51,7 @@ router.put('/[0-9]+',function(req, res) {
 });
 
 //Actualiza foto de perfil
-router.get('/[0-9]+/photo',function(req, res) {
+router.put('/[0-9]+/photo',function(req, res) {
   var usrID = req.url.match('[0-9]+');
   usrID = usrID[0];
   var my_cb_handler = cb_handler(req,res,usrID,db_handler.updatePhoto);
