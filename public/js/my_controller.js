@@ -4,6 +4,7 @@ app.controller('myCtrl', function($scope,$http) {
 
   $scope.user = {}
   $scope.lista_usuarios = [];
+  $scope.lista_intereses = [];
   $scope.id_user = null;
   $scope.showMe = false;
 
@@ -22,5 +23,11 @@ app.controller('myCtrl', function($scope,$http) {
     });
   };
 
+  $scope.getInterests = function () {
+    $http.get("/interests").then(function(response) {
+      console.log(response.data);
+      $scope.lista_intereses = response.data.interests;
+    });
+  };
 
 });
