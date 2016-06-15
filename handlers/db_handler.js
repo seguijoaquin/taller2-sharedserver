@@ -202,7 +202,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
 
   var lista_usuarios = {users:[],metadata: { version: C.METADATA_VERSION, count: 0}};
   var usuario_nuevo;
-  var id_control;
+  var id_control = undefined;
   query.on('row', function(row) {
     if(id_control != row.id_user){
       id_control = row.id_user;
