@@ -30,4 +30,11 @@ app.controller('myCtrl', function($scope,$http) {
     });
   };
 
+  $scope.deleteUser = function () {
+    $http.delete("/users/"+$scope.id_user).then(function(response) {
+      console.log(response.data);
+    });
+  };
+
+
 });
