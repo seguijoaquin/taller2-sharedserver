@@ -62,6 +62,8 @@
   <div class="container">
     <br>
     <div ng-app="myApp" ng-controller="myCtrl">
+      <br>
+      <h1>Buscar usuario</h1>
       <form>
         <div class="form-group">
           <div class="input-group">
@@ -83,6 +85,7 @@
                   <th class="text-center">Alias</th>
                   <th class="text-center">Edad</th>
                   <th class="text-center">Sexo</th>
+                  <th class="text-center">Foto de perfil</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,6 +96,7 @@
                   <td class="text-center">{{ x.alias }}</td>
                   <td class="text-center">{{ x.edad }}</td>
                   <td class="text-center">{{ x.sex }}</td>
+                  <td class="text-center">{{ x.photo_profile }}</td>
                 </tr>
               </tbody>
             </table>

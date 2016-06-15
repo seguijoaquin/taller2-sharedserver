@@ -4,12 +4,118 @@
     <meta charset="UTF-8">
     <title>Shared server web client</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/my_controller.js"></script>
+
   </head>
   <body>
-    <h1>Update user</h1>
 
-    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="./">Interfaz web</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="listUsers.html">Listar usuarios</a></li>
+              <li><a href="listInterests.html">Listar intereses</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agregar <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="addUser.html">Usuario</a></li>
+                  <li role="separator" class="divider"></li>
+                  <!--<li class="dropdown-header">Intereses</li>-->
+                  <li><a href="addInterest.html">Interes</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Editar usuario <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="updateUser.html">Modificar usuario</a></li>
+                  <li><a href="updatePhoto.html">Actualizar foto perfil</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="deleteUser.html">Eliminar usuario</a></li>
+                </ul>
+              </li>
+              <li><a href="getUser.html">Buscar usuario</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </header>
+
+    <br><br>
+
+    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+      <br><br>
+      <h1>Actualizar usuario</h1>
+      <form class="" action="">
+
+        <div class="form-group">
+          <label for="id">ID:</label>
+          <input type="number" name="id" min="1" ng-model="user.id_user" required>
+        </div>
+
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input class="form-control" id="nombre" type="text" placeholder="Su nombre" ng-model="user.name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input class="form-control" id="email" type="email" placeholder="example@example.com" ng-model="user.email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="alias">Alias:</label>
+          <input class="form-control" id="alias" type="text" placeholder="Su alias" ng-model="user.alias" required>
+        </div>
+
+        <div class="form-group">
+          <label for="sex">Sexo:</label>
+          <select class="form-control" name="sex" id="sex" ng-model="user.sex">
+            <option value="">Hombre</option>
+            <option value="">Mujer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edad">Edad:</label>
+          <input type="number" name="edad" value="18" min="16" max="99" ng-model="user.edad" required>
+        </div>
+
+        <div class="form-group">
+          <label for="latitude">Latitude:</label>
+          <input type="number" name="latitude"  ng-model="user.location.latitude" required>
+        </div>
+
+        <div class="form-group">
+          <label for="longitude">Longitude:</label>
+          <input type="number" name="longitude"  ng-model="user.location.longitude" required>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Descripcion:</label>
+          <textarea class="form-control" id="bio" placeholder="Escribe una breve descripcion sobre ti"></textarea>
+        </div>
+
+        <button class="btn btn-primary" ng-click="updateUser()">Enviar</button>
+        <br><br>
+        <div class="clearfix"></div>
+      </form>
+    </div>
   </body>
 </html>

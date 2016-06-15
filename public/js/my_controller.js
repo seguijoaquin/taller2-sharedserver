@@ -36,5 +36,22 @@ app.controller('myCtrl', function($scope,$http) {
     });
   };
 
+  $scope.updatePhoto = function () {
+    /*TODO: convertir a base64 el archivo que recibo*/
+    //Hacer el request correspondiente
+  };
+
+  $scope.addUser = function () {
+
+  };
+
+  $scope.addInterest = function () {
+
+  };
+
+  $scope.updateUser = function () {
+
+  };
+
 
 });
