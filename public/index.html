@@ -1,51 +1,71 @@
 <!DOCTYPE html>
 <html lang='en'>
-  <head>
-    <meta charset="UTF-8">
-    <title>Shared Server Interfase</title>
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-  </head>
-  <body>
-    <div class="container">
-      <br>
-      <h1>Cliente web</h1>
+<head>
+  <meta charset="UTF-8">
+  <title>Shared server web client</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 
-      <div class="form-group">
-        <a href="listUsers.html" class="btn btn-primary" role="button">List users</a>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.min.js"></script>
+  <script src="js/my_controller.js"></script>
+
+</head>
+<body>
+
+  <header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="./">Interfaz web</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="listUsers.html">Listar usuarios</a></li>
+            <li><a href="listInterests.html">Listar intereses</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agregar <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="addUser.html">Usuario</a></li>
+                <li role="separator" class="divider"></li>
+                <!--<li class="dropdown-header">Intereses</li>-->
+                <li><a href="addInterest.html">Interes</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Editar usuario <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="updateUser.html">Modificar usuario</a></li>
+                <li><a href="updatePhoto.html">Actualizar foto perfil</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="deleteUser.html">Eliminar usuario</a></li>
+              </ul>
+            </li>
+            <li><a href="getUser.html">Buscar usuario</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
+    </nav>
+  </header>
 
-      <div class="form-group">
-        <a href="addUser.html" class="btn btn-primary" role="button">Add user</a>
-      </div>
+  <br>
 
-      <div class="form-group">
-        <a href="updateUser.html" class="btn btn-primary" role="button">Update user</a>
-      </div>
-
-      <div class="form-group">
-        <a href="updatePhoto.html" class="btn btn-primary" role="button">Update photo</a>
-      </div>
-
-      <div class="form-group">
-        <a href="getUser.html" class="btn btn-primary" role="button">Get user</a>
-      </div>
-
-      <div class="form-group">
-        <a href="deleteUser.html" class="btn btn-primary" role="button">Delete user</a>
-      </div>
-
-      <div class="form-group">
-        <a href="addInterest.html" class="btn btn-primary" role="button">Add interest</a>
-      </div>
-
-      <div class="form-group">
-        <a href="listInterests.html" class="btn btn-primary" role="button">List interests</a>
-      </div>
-
+  <div class="container-fluid">
+    <div class="jumbotron">
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-  </body>
+  </div>
+</body>
 </html>
