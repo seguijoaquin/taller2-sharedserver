@@ -7,6 +7,7 @@ app.controller('myCtrl', function($scope,$http) {
   $scope.lista_intereses = [];
   $scope.id_user = null;
   $scope.showMe = false;
+  $scope.interest = { "category" : undefined, "value" : undefined }
 
   $scope.getUsers = function () {
     $http.get("/users").then(function(response) {
@@ -45,8 +46,20 @@ app.controller('myCtrl', function($scope,$http) {
 
   };
 
-  $scope.addInterest = function () {
-
+  $scope.addInterest = function() {
+    $http({
+      url: '/interests',
+      method: "POST",
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      data: { "interest" : $scope.interest}
+    }).then(function(response) {
+      console.log(response.data);
+    },
+    function(response) {
+      console.error(response);
+    });
   };
 
   $scope.updateUser = function () {
