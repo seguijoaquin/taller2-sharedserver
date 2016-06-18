@@ -10,6 +10,10 @@ psql myDB -c "CREATE TABLE users ( id_user SERIAL PRIMARY KEY, name TEXT NOT NUL
 
 psql myDB -c "CREATE TABLE pictures ( id_picture SERIAL PRIMARY KEY, id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE, pic TEXT );"
 
+#Categories
+
+psql myDB -c "CREATE TABLE categories (id_category SERIAL PRIMARY KEY, category TEXT UNIQUE NOT NULL );"
+
 #Interests
 
 psql myDB -c "CREATE TABLE interests ( id_interest SERIAL PRIMARY KEY, category TEXT NOT NULL REFERENCES categories(category) ON DELETE CASCADE, value TEXT, UNIQUE (category, value) );"
@@ -19,4 +23,5 @@ psql myDB -c "CREATE TABLE interests ( id_interest SERIAL PRIMARY KEY, category 
 psql myDB -c "CREATE TABLE users_interests ( id_usr_int SERIAL PRIMARY KEY, id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE, id_interest INTEGER NOT NULL REFERENCES interests(id_interest) ON DELETE CASCADE );"
 
 
-psql myDB -c "CREATE TABLE categories ( id_category SERIAL PRIMARY KEY, category TEXT UNIQUE NOT NULL );"
+psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
