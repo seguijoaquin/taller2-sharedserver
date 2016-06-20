@@ -81,10 +81,7 @@
 
         <div class="form-group">
           <label for="sex">Sexo:</label>
-          <select class="form-control" name="sex" id="sex" ng-model="user.sex">
-            <option value="">Hombre</option>
-            <option value="">Mujer</option>
-          </select>
+          <select class="form-control" name="sex" id="sex" ng-init="user.sex = sex[0]"ng-model="user.sex" ng-options="x for x in sex"></select>
         </div>
 
         <div class="form-group">
@@ -111,6 +108,7 @@
         <br><br>
         <div class="clearfix"></div>
       </form>
+      {{ user }}
     </div>
   </body>
 </html>
