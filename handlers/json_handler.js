@@ -32,7 +32,7 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user,valid_interests,cb) {
     usuario.user.alias = req.body.user.alias;
     usuario.user.email = req.body.user.email;
     usuario.user.sex = req.body.user.sex;
-    usuario.user.edad = req.body.user.edad;
+    usuario.user.age = req.body.user.age;
     usuario.user.photo_profile = "no_photo";
     usuario.user.interests = valid_interests;
     usuario.user.location.latitude = req.body.user.location.latitude;
@@ -50,7 +50,7 @@ json_handler.armarUsuarioVacio = function (cb) {
         alias:null,
         email:null,
         sex:null,
-        edad: null,
+        age: null,
         photo_profile:null,
         interests:[],
         location:{latitude:null,longitude:null}

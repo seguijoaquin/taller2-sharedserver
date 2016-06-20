@@ -18,7 +18,7 @@ Almacenara nombre, email, alias, sexo, edad, ubicacion (latitud y longitud) y un
 - email
 - alias
 - sex
-- edad
+- age
 - latitude
 - longitude
 
@@ -36,7 +36,7 @@ Crear la tabla:
 	alias TEXT,
 	email TEXT NOT NULL,
 	sex TEXT NOT NULL,
-	edad INTEGER NOT NULL,
+	age INTEGER NOT NULL,
 	latitude REAL,
 	longitude REAL,
 	photo_profile TEXT

@@ -124,13 +124,13 @@ function saveUser(req,res,client,done,cb) {
   var email = req.body.user.email;
   var alias = req.body.user.alias;
   var sex = req.body.user.sex;
-  var edad = req.body.user.edad;
+  var age = req.body.user.age;
   var latitude = req.body.user.location.latitude;
   var longitude = req.body.user.location.longitude;
   var interests = req.body.user.interests;
   var id_user = "";
 
-  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,edad,latitude,longitude,photo_profile],function(err, result) {
+  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,age,latitude,longitude,photo_profile],function(err, result) {
     if (err) {
       cb(id_user,err);
     } else {
@@ -206,13 +206,13 @@ db_handler.getUsers = function (req, res, param, client, done) {
   query.on('row', function(row) {
     if(id_control != row.id_user){
       id_control = row.id_user;
-      usuario_nuevo = {user: {id: null,name: null,alias:null,email:null,sex:null,edad:null,photo_profile:null,interests:[],location:{latitude:null,longitude:null}}};
+      usuario_nuevo = {user: {id: null,name: null,alias:null,email:null,sex:null,age:null,photo_profile:null,interests:[],location:{latitude:null,longitude:null}}};
       usuario_nuevo.user.id=row.id_user;
       usuario_nuevo.user.name = row.name;
       usuario_nuevo.user.alias = row.alias;
       usuario_nuevo.user.email = row.email;
       usuario_nuevo.user.sex = row.sex;
-      usuario_nuevo.user.edad = row.edad;
+      usuario_nuevo.user.age = row.age;
       usuario_nuevo.user.photo_profile = "https://t2shared.herokuapp.com/users/"+id_control+"/photo";
       usuario_nuevo.user.interests.push({category:row.category,value:row.value});
       usuario_nuevo.user.location.latitude = row.latitude;
@@ -233,7 +233,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
 //Si el campo location no existe, crashea la app
 db_handler.modifyUser = function(req, res, usrID, client, done) {
   var u = req.body.user;
-  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.edad,u.location.latitude,u.location.longitude, usrID],function (err,result) {
+  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.age,u.location.latitude,u.location.longitude, usrID],function (err,result) {
       queryExitosa (err, result, res, done);
     });
 }
@@ -253,7 +253,7 @@ db_handler.getUser = function (req, res, usrID, client, done) {
         usuario.user.alias = row.alias;
         usuario.user.email = row.email;
         usuario.user.sex = row.sex;
-        usuario.user.edad = row.edad;
+        usuario.user.age = row.age;
         usuario.user.photo_profile = row.photo_profile;
         usuario.user.location.latitude = row.latitude;
         usuario.user.location.longitude = row.longitude;

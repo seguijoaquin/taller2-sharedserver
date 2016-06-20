@@ -8,7 +8,7 @@ var db_handler = require('../handlers/db_handler.js');
 function validarUsuario(req) {
   var u = req.body.user;
   //TODO: Validar formato de campo sex
-  return (u.name && u.email && u.alias && u.sex && u.edad && u.location.longitude && u.location.latitude);
+  return (u.name && u.email && u.alias && u.sex && u.age && u.location.longitude && u.location.latitude);
 }
 
 function sendError(err,res,status) {
