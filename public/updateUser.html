@@ -59,7 +59,7 @@
 
     <br><br>
 
-    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+    <div class="container" ng-app="myApp" ng-controller="myCtrl" ng-init="user.interests=[]">
       <br><br>
       <h1>Actualizar usuario</h1>
       <form class="" action="">
@@ -101,7 +101,7 @@
 
         <div class="form-group">
           <label for="longitude">Longitude:</label>
-          <input type="number" name="longitude"  ng-model=user.location.longitude" required>
+          <input type="number" name="longitude"  ng-model="user.location.longitude" required>
         </div>
 
         <div class="form-group">
@@ -113,6 +113,7 @@
         <br><br>
         <div class="clearfix"></div>
       </form>
+
     </div>
   </body>
 </html>

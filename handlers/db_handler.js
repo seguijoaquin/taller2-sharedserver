@@ -202,7 +202,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
   var usuario_nuevo;
   var id_control = null;
   query.on('row', function(row) {
-    console.log(row);
+    //console.log(row);
     if (id_control != row.id_user) {
       id_control = row.id_user;
       usuario_nuevo = {user: {id: null,name: null,alias:null,email:null,sex:null,age:null,photo_profile:null,interests:[],location:{latitude:null,longitude:null}}};
