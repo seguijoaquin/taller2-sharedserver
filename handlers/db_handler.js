@@ -28,7 +28,7 @@ function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
     client.query(C.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
-      if (err) return sendError(err,res,done,C.STATUS_ERROR);
+      if (err) return sendError({"success" : false, "error" : err, "description" : "Error al obtener categorias\n"},res,done,C.STATUS_ERROR);
 
       if (hayResultado(result)) valid_categories.push(result.rows[0]);
       if(++checked == interests.length) cb(valid_categories);
@@ -100,7 +100,7 @@ function getValidInterests(interests,valid_categories,cb) {
 function checkInterests(req, res, client, done, cb) {
   var interests = req.body.user.interests;
   var valid_categories = [];
-  var err = null;
+  var err = {"success" : true, "error" : null, "description" : "No error\n"};
   var has_interests = (interests && interests.length > 0);
   if (has_interests) {
     //Verifico que la categoria exista, si existe la agrego a los intereses validos, sino no
@@ -114,7 +114,7 @@ function checkInterests(req, res, client, done, cb) {
   } else {
     //Devuelvo: Has interests false, vector vacío, y error null
     var valid_interests = [];
-    cb(has_interests,valid_interests,err);
+    return cb(has_interests,valid_interests,err);
   }
 }
 
@@ -128,15 +128,13 @@ function saveUser(req,res,client,done,cb) {
   var latitude = req.body.user.location.latitude;
   var longitude = req.body.user.location.longitude;
   var interests = req.body.user.interests;
-  var id_user = "";
 
-  client.query(C.QUERY_ADD_USER,[name,email,alias,sex,age,latitude,longitude,photo_profile],function(err, result) {
-    if (err) {
-      cb(id_user,err);
-    } else {
-      id_user = result.rows[0].id_user;
-      cb(id_user,err);
-    }
+  query = client.query(C.QUERY_ADD_USER,[name,email,alias,sex,age,latitude,longitude,photo_profile],function(err, result) {
+    if (err) return cb("no_id",{"success" : false});
+  });
+
+  query.on('end',function(result) {
+    cb(result.rows[0].id_user,{"success" : true});
   });
 }
 
@@ -181,9 +179,9 @@ db_handler.addUser = function(req, res, param, client, done) {
     //Si el email consultado no esta en la tabla users
     //Chequeo si hay intereses
     checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
-      if (err) return sendError(err,res,done,C.STATUS_ERROR);
+      if (err.success == 'false') return sendError(C.ERROR_CHECK_INTERESTS,res,done,C.STATUS_ERROR);
       saveUser(req,res,client,done,function (id_user,err) {
-        if(err) return sendError(C.ERROR_SAVE_USER,res,done,C.STATUS_ERROR);
+        if(err.success == 'false') return sendError(C.ERROR_SAVE_USER,res,done,C.STATUS_ERROR);
         if (has_interests) {
           processInterests(valid_interests, function(category,value) {
             saveInterests(res,client,done,id_user,category,value);
@@ -202,24 +200,30 @@ db_handler.getUsers = function (req, res, param, client, done) {
 
   var lista_usuarios = {users:[],metadata: { version: C.METADATA_VERSION, count: 0}};
   var usuario_nuevo;
-  var id_control = undefined;
+  var id_control = null;
   query.on('row', function(row) {
-    if(id_control != row.id_user){
+    console.log(row);
+    if (id_control != row.id_user) {
       id_control = row.id_user;
       usuario_nuevo = {user: {id: null,name: null,alias:null,email:null,sex:null,age:null,photo_profile:null,interests:[],location:{latitude:null,longitude:null}}};
-      usuario_nuevo.user.id=row.id_user;
+      usuario_nuevo.user.id=id_control;
       usuario_nuevo.user.name = row.name;
       usuario_nuevo.user.alias = row.alias;
       usuario_nuevo.user.email = row.email;
       usuario_nuevo.user.sex = row.sex;
       usuario_nuevo.user.age = row.age;
       usuario_nuevo.user.photo_profile = "https://t2shared.herokuapp.com/users/"+id_control+"/photo";
-      usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+      if(row.category != null) {
+        usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+      }
       usuario_nuevo.user.location.latitude = row.latitude;
       usuario_nuevo.user.location.longitude = row.longitude;
       lista_usuarios.users.push(usuario_nuevo);
       lista_usuarios.metadata.count++;
-    }else usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+    } else
+      if (row.category != null) {
+        usuario_nuevo.user.interests.push({category:row.category,value:row.value});
+      }
   });
 
   query.on('end',function(){
@@ -243,12 +247,16 @@ db_handler.getUser = function (req, res, usrID, client, done) {
     done();
     if (err) return sendError(err,res,done,C.STATUS_ERROR);
     if (!hayResultado(result)) return sendError(C.USER_NOT_FOUND,res,done,C.STATUS_NOT_FOUND); //User not found
+
   });
 
   json_handler.armarUsuarioVacio(function(usuario){
-    query.on('row',function(row,result){
+    query.on('row',function(row){
       //Verifico que un campo no sea null para no sobreescribir en cada iteracion
-      if(usuario.user.name == null) {
+      console.log(row);
+      //row.id_user es null y no se por que ???
+      if(usuario.user.id === null) {
+        usuario.user.id = usrID;
         usuario.user.name = row.name;
         usuario.user.alias = row.alias;
         usuario.user.email = row.email;
@@ -257,14 +265,14 @@ db_handler.getUser = function (req, res, usrID, client, done) {
         usuario.user.photo_profile = row.photo_profile;
         usuario.user.location.latitude = row.latitude;
         usuario.user.location.longitude = row.longitude;
-        usuario.user.id = row.id_user;
       }
-      usuario.user.interests.push({category:row.category,value:row.value});
+      if(row.id_interest) usuario.user.interests.push({category:row.category,value:row.value});
     });
     query.on('end',function(result){
       if (hayResultado(result)) res.json(usuario).end();
     });
   });
+
 }
 
 db_handler.deleteUser = function (req, res, usrID, client, done) {
@@ -287,7 +295,7 @@ function hayResultado (result) {
 function sendError (err, res, done, status) {
   console.log(err);
   if (done) {done();}
-  res.status(status).json({succes: false, error: err}).end();
+  res.status(status).json({success: false, error: err}).end();
 }
 
 function queryExitosa (err, result, res, done) {

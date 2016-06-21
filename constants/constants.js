@@ -18,6 +18,8 @@ module.exports = Object.freeze({
 
     USER_NOT_FOUND: "[ERROR: No se encuentra el usuario]",
 
+    ERROR_CHECK_INTERESTS: "[ERROR: Error al chequear intereses]",
+
     // ---------------------------- STATUS ----------------------------------------
 
     STATUS_SUCCESS: 200,
@@ -38,7 +40,7 @@ module.exports = Object.freeze({
 
     QUERY_SELECT_EMAILS: "SELECT * FROM users WHERE email=($1)",
 
-    QUERY_GET_USERS: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) ORDER BY users.id_user",
+    QUERY_GET_USERS: "SELECT users.*,interests.*, users_interests.id_usr_int FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) ORDER BY users.id_user",
 
     QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4), age=($5),latitude=($6),longitude=($7) WHERE id_user=($8)",
 
