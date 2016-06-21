@@ -253,10 +253,9 @@ db_handler.getUser = function (req, res, usrID, client, done) {
   json_handler.armarUsuarioVacio(function(usuario){
     query.on('row',function(row){
       //Verifico que un campo no sea null para no sobreescribir en cada iteracion
-      console.log(row);
-      //row.id_user es null y no se por que ???
+      //console.log(row);
       if(usuario.user.id === null) {
-        usuario.user.id = usrID;
+        usuario.user.id = row.id_user;
         usuario.user.name = row.name;
         usuario.user.alias = row.alias;
         usuario.user.email = row.email;

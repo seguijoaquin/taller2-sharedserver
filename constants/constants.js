@@ -44,7 +44,7 @@ module.exports = Object.freeze({
 
     QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4), age=($5),latitude=($6),longitude=($7) WHERE id_user=($8)",
 
-    QUERY_GET_ONE_USER: "SELECT * FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) WHERE users.id_user = ($1)",
+    QUERY_GET_ONE_USER: "SELECT users.*,interests.*, users_interests.id_usr_int FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) WHERE users.id_user = ($1)",
 
     QUERY_DELETE_USER: "DELETE FROM users WHERE id_user=($1)",
 
