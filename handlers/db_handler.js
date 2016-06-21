@@ -27,7 +27,7 @@ db_handler.atenderQuery = function (req, res, next) {
 function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
-    client.query(C.QUERY_GET_CATEGORIES,[interests[i].category], function(err,result){
+    client.query(C.QUERY_GET_ONE_CATEGORY,[interests[i].category], function(err,result){
       if (err) return sendError({"success" : false, "error" : err, "description" : "Error al obtener categorias\n"},res,done,C.STATUS_ERROR);
 
       if (hayResultado(result)) valid_categories.push(result.rows[0]);
@@ -143,6 +143,23 @@ function devolverUser(req,res,id_user,done,valid_interests) {
   json_handler.armarJsonUsuarioNuevo(req,id_user,valid_interests,function(usuario) {
       res.status(C.STATUS_CREATED).json(usuario).end();
   });
+}
+
+db_handler.getCategories = function (req,res,param,client,done) {
+  var query = client.query(C.QUERY_GET_CATEGORIES,function(err,result) {
+    done();
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+  });
+
+  query.on('end',function(result) {
+    json_handler.armarJsonListaCategorias(result,function(respuesta) {
+      return res.json(respuesta).end();
+    });
+  });
+}
+
+db_handler.addCategory = function (req,res,param,client,done) {
+  //TODO: Alta de categorias
 }
 
 db_handler.getInterests = function (req, res, param, client, done) {

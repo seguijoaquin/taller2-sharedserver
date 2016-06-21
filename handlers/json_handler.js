@@ -20,6 +20,14 @@ json_handler.armarJsonListaIntereses = function(result,cb) {
   cb(jsonObject);
 }
 
+json_handler.armarJsonListaCategorias = function(result,cb) {
+  var lista_categorias = { "categories" : [], metadata : {version: C.METADATA_VERSION, count : result.rowCount}}
+  for (var i = 0; i < result.rowCount; i++) {
+    lista_categorias.categories.push(result.rows[i].category);
+  }
+  cb(lista_categorias);
+}
+
 /*
  * Una vez que se da de alta un usuario nuevo, necesito devolver
  * un JSON que contenga los campos que especifica la API que

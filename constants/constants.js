@@ -54,8 +54,9 @@ module.exports = Object.freeze({
 
     QUERY_SELECT_ONE_INTEREST: "SELECT * FROM interests WHERE category=($1) AND value=($2)",
 
-    QUERY_GET_CATEGORIES: "SELECT * FROM categories WHERE category=($1)",
+    QUERY_GET_ONE_CATEGORY: "SELECT * FROM categories WHERE category=($1)",
 
+    QUERY_GET_CATEGORIES: "SELECT * FROM categories",
 
 
     //----------------------------- DIRECTORIOS DEL SERVER - USERS -----------------------------
