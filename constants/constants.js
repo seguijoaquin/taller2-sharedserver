@@ -22,6 +22,7 @@ module.exports = Object.freeze({
 
     ERROR_INVALID_CATEGORY : "[ERROR : La categoria no puede ser nula]",
 
+    ERROR_UPDATE_INTERESTS : "[ERROR : Hubo un error al modificar los intereses del usuario]",
     // ---------------------------- STATUS ----------------------------------------
 
     STATUS_SUCCESS: 200,
@@ -44,7 +45,7 @@ module.exports = Object.freeze({
 
     QUERY_GET_USERS: "SELECT users.*,interests.*, users_interests.id_usr_int FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) ORDER BY users.id_user",
 
-    QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4), age=($5),latitude=($6),longitude=($7) WHERE id_user=($8)",
+    QUERY_UPDATE_USERS: "UPDATE users SET name=($1),email=($2),alias=($3),sex=($4), age=($5),latitude=($6),longitude=($7),photo_profile=($8) WHERE id_user=($9)",
 
     QUERY_GET_ONE_USER: "SELECT users.*,interests.*, users_interests.id_usr_int FROM (users LEFT JOIN users_interests ON (users.id_user=users_interests.id_user)) LEFT JOIN interests ON (users_interests.id_interest=interests.id_interest) WHERE users.id_user = ($1)",
 
@@ -59,6 +60,8 @@ module.exports = Object.freeze({
     QUERY_GET_ONE_CATEGORY: "SELECT * FROM categories WHERE category=($1)",
 
     QUERY_GET_CATEGORIES: "SELECT * FROM categories",
+
+    QUERY_DELETE_USERS_INTERESTS : "DELETE FROM users_interests WHERE id_user=($1)",
 
 
     //----------------------------- DIRECTORIOS DEL SERVER - USERS -----------------------------

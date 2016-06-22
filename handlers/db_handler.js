@@ -138,10 +138,10 @@ function saveUser(req,res,client,done,cb) {
   });
 }
 
-function devolverUser(req,res,id_user,done,valid_interests) {
+function devolverUser(req,res,id_user,done,valid_interests,status) {
   done();
   json_handler.armarJsonUsuarioNuevo(req,id_user,valid_interests,function(usuario) {
-      res.status(C.STATUS_CREATED).json(usuario).end();
+      res.status(status).json(usuario).end();
   });
 }
 
@@ -208,7 +208,7 @@ db_handler.addUser = function(req, res, param, client, done) {
             saveInterests(res,client,done,id_user,category,value);
           });
         }
-        devolverUser(req,res,id_user,done,valid_interests);
+        devolverUser(req,res,id_user,done,valid_interests,C.STATUS_CREATED);
       });
     });
   });
@@ -253,15 +253,57 @@ db_handler.getUsers = function (req, res, param, client, done) {
   });
 }
 
+function updateUser (req,res,client,done,usrID,cb) {
+  var photo_profile = req.body.photo_profile;
+  var name = req.body.user.name;
+  var email = req.body.user.email;
+  var alias = req.body.user.alias;
+  var sex = req.body.user.sex;
+  var age = req.body.user.age;
+  var latitude = req.body.user.location.latitude;
+  var longitude = req.body.user.location.longitude;
+  var interests = req.body.user.interests;
+
+  var query = client.query(C.QUERY_UPDATE_USERS,[name,email,alias,sex,age,latitude,longitude,photo_profile,usrID],function(err, result) {
+    if (err) return cb({"success" : false});
+  });
+  query.on('end',function(result) {
+    cb({"succes" : true});
+  });
+}
+
+function deleteAllInterests (client,done,usrID,cb) {
+  var query = client.query(C.QUERY_DELETE_USERS_INTERESTS,[usrID],function (err,result) {
+    if (err) cb({"success" : false});
+  });
+  query.on('end',function(result) {
+    cb({"succes" : true});
+  });
+}
+
 //Pisa todos los valores que estan en la query
 //Si en el json no existen los campos, pone null
 //Si el campo location no existe, crashea la app
+//Borra todos los intereses del usuario y crea intereses nuevos
 db_handler.modifyUser = function(req, res, usrID, client, done) {
-  var u = req.body.user;
-  client.query(C.QUERY_UPDATE_USERS,[u.name, u.email,u.alias,u.sex,u.age,u.location.latitude,u.location.longitude, usrID],function (err,result) {
-      queryExitosa (err, result, res, done);
+  //Chequeo si hay intereses
+  checkInterests(req,res,client,done, function (has_interests,valid_interests, err) {
+    if (err.success == 'false') return sendError(C.ERROR_CHECK_INTERESTS,res,done,C.STATUS_ERROR);
+    updateUser(req,res,client,done,usrID,function (err) {
+      if(err.success == 'false') return sendError(C.ERROR_SAVE_USER,res,done,C.STATUS_ERROR);
+      deleteAllInterests(client,done,usrID,function(err){
+        if(err.success == 'false') return sendError(C.ERROR_UPDATE_INTERESTS,res,done,C.STATUS_ERROR);
+        if (has_interests) {
+          processInterests(valid_interests, function(category,value) {
+            saveInterests(res,client,done,usrID,category,value);
+          });
+        }
+      });
+      devolverUser(req,res,usrID,done,valid_interests,C.STATUS_SUCCESS);
     });
+  });
 }
+
 
 db_handler.getUser = function (req, res, usrID, client, done) {
   var query = client.query(C.QUERY_GET_ONE_USER,[usrID],function (err,result) {
