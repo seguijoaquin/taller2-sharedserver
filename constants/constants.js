@@ -20,6 +20,8 @@ module.exports = Object.freeze({
 
     ERROR_CHECK_INTERESTS: "[ERROR: Error al chequear intereses]",
 
+    ERROR_INVALID_CATEGORY : "[ERROR : La categoria no puede ser nula]",
+
     // ---------------------------- STATUS ----------------------------------------
 
     STATUS_SUCCESS: 200,

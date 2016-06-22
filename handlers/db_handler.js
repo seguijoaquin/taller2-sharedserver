@@ -178,11 +178,15 @@ db_handler.getInterests = function (req, res, param, client, done) {
 db_handler.addInterest = function (req, res, param, client, done) {
   var category = req.body.interest.category;
   var value = req.body.interest.value;
-  createInterest(res,client,done,category,value,function(id_interest,err) {
-    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+  if (category) {
+    createInterest(res,client,done,category,value,function(id_interest,err) {
+      if (err) return sendError(err,res,done,C.STATUS_ERROR);
 
-    res.sendStatus(C.STATUS_CREATED).end();
-  });
+      res.sendStatus(C.STATUS_CREATED).end();
+    });
+  } else {
+    return sendError(C.ERROR_INVALID_CATEGORY,res,done,C.STATUS_ERROR);
+  }
 }
 
 db_handler.addUser = function(req, res, param, client, done) {
