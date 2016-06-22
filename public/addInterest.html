@@ -63,14 +63,19 @@
       <h1>Alta de interes</h1>
       <form class="" action="">
 
+
+
         <div class="form-group">
           <label for="category">Category:</label>
-          <input class="form-control" id="category" type="text" placeholder="music/band" ng-model="interest.category" required>
+<!--      <input class="form-control" id="category" type="text" placeholder="music/band" ng-model="interest.category" required> -->
+          <select class="form-control" name="category" id="category" ng-init="getCategories()" ng-model="interest.category" ng-options="x for x in lista_categorias">
+            <option value="">-- please choose a category --</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label for="value">Value:</label>
-          <input class="form-control" id="value" type="text" placeholder="radiohead" ng-model="interest.value" required>
+          <input class="form-control" id="value" type="text" placeholder="" ng-model="interest.value" required>
         </div>
 
         <button class="btn btn-primary" ng-click="addInterest()">Enviar</button>
