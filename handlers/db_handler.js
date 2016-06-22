@@ -176,8 +176,8 @@ db_handler.getInterests = function (req, res, param, client, done) {
 }
 
 db_handler.addInterest = function (req, res, param, client, done) {
-  var category = req.body.interest.category;
-  var value = req.body.interest.value;
+  var category = req.body.interest.category.toLowerCase();
+  var value = req.body.interest.value.toLowerCase();
   if (category) {
     createInterest(res,client,done,category,value,function(id_interest,err) {
       if (err) return sendError(err,res,done,C.STATUS_ERROR);
