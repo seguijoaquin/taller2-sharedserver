@@ -1,8 +1,44 @@
 # Change Log
 
-## [Unreleased](https://github.com/seguijoaquin/taller2-sharedserver/tree/HEAD)
+## [v1.0.2](https://github.com/seguijoaquin/taller2-sharedserver/tree/v1.0.2) (2016-06-23)
+[Full Changelog](https://github.com/seguijoaquin/taller2-sharedserver/compare/v1.0.1...v1.0.2)
 
-[Full Changelog](https://github.com/seguijoaquin/taller2-sharedserver/compare/v1.0.0...HEAD)
+**Implemented enhancements:**
+
+- Listar intereses de un usuario al consultar por ID via web [\#51](https://github.com/seguijoaquin/taller2-sharedserver/issues/51)
+
+**Fixed bugs:**
+
+- Alta de un interes con categoria nula produce crash [\#60](https://github.com/seguijoaquin/taller2-sharedserver/issues/60)
+- No se modifican los intereses cuando se modifica a un usuario [\#59](https://github.com/seguijoaquin/taller2-sharedserver/issues/59)
+- Implementar dropdown button de categorias para el alta de intereses [\#53](https://github.com/seguijoaquin/taller2-sharedserver/issues/53)
+- Listar intereses disponibles al querer dar de alta un usuario via web [\#52](https://github.com/seguijoaquin/taller2-sharedserver/issues/52)
+- Error al listar usuarios sin intereses [\#50](https://github.com/seguijoaquin/taller2-sharedserver/issues/50)
+- Se espera un campo AGE y se obtiene un campo EDAD [\#49](https://github.com/seguijoaquin/taller2-sharedserver/issues/49)
+- Error al actualizar una foto via web [\#48](https://github.com/seguijoaquin/taller2-sharedserver/issues/48)
+- Error al dar de alta un usuario via web [\#47](https://github.com/seguijoaquin/taller2-sharedserver/issues/47)
+- Al correr las pruebas en docker crashea [\#45](https://github.com/seguijoaquin/taller2-sharedserver/issues/45)
+- Crash al dar de alta un interes [\#44](https://github.com/seguijoaquin/taller2-sharedserver/issues/44)
+- Error al listar usuarios [\#43](https://github.com/seguijoaquin/taller2-sharedserver/issues/43)
+- Actualizar foto de usuario no funciona [\#36](https://github.com/seguijoaquin/taller2-sharedserver/issues/36)
+- Los usuarios se repiten [\#28](https://github.com/seguijoaquin/taller2-sharedserver/issues/28)
+- Mostrar los intereses de cada usuario al listar usuarios [\#26](https://github.com/seguijoaquin/taller2-sharedserver/issues/26)
+
+**Closed issues:**
+
+- Normalizar alta de intereses a minuscula [\#61](https://github.com/seguijoaquin/taller2-sharedserver/issues/61)
+- Servicio para obtener lista de categorías [\#58](https://github.com/seguijoaquin/taller2-sharedserver/issues/58)
+- Buscar un usuario por ID [\#40](https://github.com/seguijoaquin/taller2-sharedserver/issues/40)
+- Listar intereses por interfaz web [\#39](https://github.com/seguijoaquin/taller2-sharedserver/issues/39)
+- Listar usuarios por interfaz web [\#37](https://github.com/seguijoaquin/taller2-sharedserver/issues/37)
+- Incluir un template de bootstrap para la pagina de inicio [\#35](https://github.com/seguijoaquin/taller2-sharedserver/issues/35)
+- Boton Enviar para dar de alta un usuario [\#34](https://github.com/seguijoaquin/taller2-sharedserver/issues/34)
+- Linkear los botones de index con cada una de las paginas html [\#33](https://github.com/seguijoaquin/taller2-sharedserver/issues/33)
+- Implementar cliente web con bootstrap [\#16](https://github.com/seguijoaquin/taller2-sharedserver/issues/16)
+- Setear las tablas de las base de datos local \(usando Docker\) para las pruebas [\#12](https://github.com/seguijoaquin/taller2-sharedserver/issues/12)
+
+## [v1.0.1](https://github.com/seguijoaquin/taller2-sharedserver/tree/v1.0.1) (2016-06-05)
+[Full Changelog](https://github.com/seguijoaquin/taller2-sharedserver/compare/v1.0.0...v1.0.1)
 
 **Implemented enhancements:**
 
