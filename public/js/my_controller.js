@@ -7,7 +7,7 @@ app.controller('myCtrl', function($scope,$http) {
   $scope.lista_categorias = [];
   $scope.id_user = undefined;
   $scope.showMe = false;
-  $scope.interest = { "category" : undefined, "value" : undefined }
+  $scope.interest = { "category" : undefined, "value" : undefined, active : undefined}
   $scope.photo = undefined;
   $scope.user = {}
   $scope.sex = ["Hombre","Mujer"];
@@ -33,6 +33,8 @@ app.controller('myCtrl', function($scope,$http) {
       console.log(response.data);
       $scope.showMe = true;
       $scope.user = [response.data.user];
+      var user_photo = Base64.decode($scope.user.photo_profile);
+      $scope.user.photo_profile = user_photo;
     });
   };
 
@@ -67,7 +69,16 @@ app.controller('myCtrl', function($scope,$http) {
     });
   };
 
+  $scope.saveInterests = function () {
+    for(var i in $scope.lista_intereses) {
+      if($scope.lista_intereses[i].active) {
+        $scope.user.interests.push({'category':$scope.lista_intereses[i].category,'value':$scope.lista_intereses[i].value});
+      }
+    }
+  };
+
   $scope.addUser = function () {
+    $scope.saveInterests();
     $http({
       url: '/users',
       method: "POST",
@@ -80,6 +91,18 @@ app.controller('myCtrl', function($scope,$http) {
     },
     function(response) {
       console.error(response);
+    });
+  };
+
+  $scope.init_addUser = function () {
+    $scope.user.interests = [];
+    var one_interest;
+    $http.get("/interests").then(function(response) {
+      console.log(response.data);
+      for(var i in response.data.interests){
+        one_interest = {category: response.data.interests[i].category, value: response.data.interests[i].value, active: false};
+        $scope.lista_intereses.push(one_interest);
+      }
     });
   };
 
@@ -100,6 +123,7 @@ app.controller('myCtrl', function($scope,$http) {
   };
 
   $scope.updateUser = function () {
+    $scope.saveInterests();
     $http({
       url: '/users/'+$scope.user.id,
       method: "PUT",
