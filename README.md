@@ -9,6 +9,8 @@
 - Bootstrap
 - Git
 
+How to install dependencies and tecnologies required for deploy [here](https://github.com/seguijoaquin/taller2-sharedserver/wiki/Dependencies)
+
 ### Heroku
 
 http://t2shared.herokuapp.com
@@ -24,7 +26,12 @@ Link repository to heroku app:
 
 `$ heroku git:remote -a t2shared`
 
-Run the app locally
+To open the app:
+
+`$ heroku open`
+
+
+Run the server locally
 -------------------
 First, install all the dependencies locally
 `$ npm install`
@@ -32,14 +39,29 @@ First, install all the dependencies locally
 Then run
 `$ node ./bin/www`
 
-The app should be running on localhost:5000
+The server should be running on https://localhost:5000
+
+Run the server locally with heroku
+-------------------------------
+
+Once heroku is installed and the repository linked to the heroku app, run:
+
+`$ heroku local web`
+
+The server should be running on https://localhost:5000
+
+### Web Client
+
+The web client runs on https://t2shared.herokuapp.com
+
+The web client user manual can be found [here](https://github.com/seguijoaquin/taller2-sharedserver/wiki/WebClient)
 
 ### Git
 
 To download a specific remote branch and set to track it
 
-`git checkout -t origin/branch-name`
+`$ git checkout -t origin/branch-name`
 
 ### PostgreSQL
 
-Información sobre la configuración de la base de datos [aquí](https://github.com/seguijoaquin/taller2-sharedserver/blob/master/DB_README.md)
+Information about database configuration and structure [here](https://github.com/seguijoaquin/taller2-sharedserver/wiki/Database)
