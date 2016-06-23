@@ -61,7 +61,7 @@
   <div class="container">
     <div ng-app="myApp" ng-controller="myCtrl">
       <h1>Actualizar foto de perfil</h1>
-      <form>
+      <form class="" action="">
         <div class="form-group">
           <div class="input-group">
             <input type="number" min="1" class="form-control" placeholder="#ID usuario" ng-model="id_user">
@@ -70,12 +70,24 @@
 
         <div class="form-group">
           <label for="archivo">Foto:</label>
-          <input type="file" id="foto" ng-model="photo">
-          <p class="help-block">Maximo 4MB</p>
+          <input type="file" id="archivo" ng-model="photo_file" disabled>
+          <p class="help-block">Maximo 30MB</p>
+        </div>
+
+        <div class="form-group">
+          <label for="photo">Foto (base64):</label>
+          <textarea class="form-control" id="photo" type="text" placeholder="no_photo" ng-model="photo" required></textarea>
         </div>
 
         <button class="btn btn-primary" ng-click="updatePhoto()">Enviar</button>
       </form>
+
+      <div class="container" ng-show="showMe_success">
+        <p class="bg-success">Foto actualizada.</p>
+      </div>
+      <div class="container" ng-show="showMe_error">
+        <p class="bg-danger">Error al actualizar foto.</p>
+      </div>
     </div>
   </div>
 

@@ -72,7 +72,7 @@
           </div>
         </div>
 
-        <div class="table-group" ng-show="showMe">
+        <div class="table-group" ng-show="showMe_success">
           <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover table-condensed">
               <thead>
@@ -101,6 +101,10 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div class="container" ng-show="showMe_error">
+          <p class="bg-danger">Usuario no encontrado.</p>
         </div>
       </form>
     </div>
