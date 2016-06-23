@@ -8,7 +8,6 @@ app.controller('myCtrl', function($scope,$http) {
   $scope.id_user = undefined;
   $scope.showMe_success = false;
   $scope.showMe_error = false;
-  $scope.mostrar_formulario = true;
   $scope.interest = { "category" : undefined, "value" : undefined, active : undefined}
   $scope.photo = undefined;
   $scope.user = {}
@@ -73,7 +72,7 @@ app.controller('myCtrl', function($scope,$http) {
   $scope.updatePhoto = function () {
     /*TODO: convertir a base64 el archivo que recibo*/
     //var photo_texted = Base64.encode($scope.photo);
-    $scope.restartShowMe();
+    //$scope.restartShowMe();
     $http({
       url: "/users/"+scope.id_user+"/photo",
       method: "PUT",
@@ -83,13 +82,13 @@ app.controller('myCtrl', function($scope,$http) {
       data: { "photo" : $scope.photo }
     }).then(function(response) {
       console.log(response.data);
-      $scope.showMe_error = false;
-      $scope.showMe_success = true;
+      //$scope.showMe_error = false;
+      //$scope.showMe_success = true;
     },
     function(response) {
       console.error(response);
-      $scope.showMe_error = true;
-      $scope.showMe_success = false;
+      //$scope.showMe_error = true;
+      //$scope.showMe_success = false;
     });
   };
 
@@ -101,29 +100,25 @@ app.controller('myCtrl', function($scope,$http) {
     }
   };
 
-  $scope.ocultar_formulario = function () {
-    $scope.mostrar_formulario = false;
-  };
-
   $scope.addUser = function () {
     $scope.saveInterests();
-    $scope.ocultar_formulario();
+    //$scope.ocultar_formulario();
     $http({
       url: '/users',
       method: "POST",
       headers:{
         'Content-Type': 'application/json'
       },
-      data: { 'user' : $scope.user}
+      data: { 'user' : $scope.user }
     }).then(function(response) {
       console.log(response.data);
-      $scope.showMe_error = false;
-      $scope.showMe_success = true;
+      //$scope.showMe_error = false;
+      //$scope.showMe_success = true;
     },
     function(response) {
       console.error(response);
-      $scope.showMe_error = true;
-      $scope.showMe_success = false;
+      //$scope.showMe_error = true;
+      //$scope.showMe_success = false;
     });
   };
 
@@ -140,7 +135,6 @@ app.controller('myCtrl', function($scope,$http) {
   };
 
   $scope.addInterest = function() {
-    $scope.ocultar_formulario();
     $http({
       url: '/interests',
       method: "POST",
@@ -150,19 +144,18 @@ app.controller('myCtrl', function($scope,$http) {
       data: { "interest" : $scope.interest}
     }).then(function(response) {
       console.log(response.data);
-      $scope.showMe_error = false;
-      $scope.showMe_success = true;
+      //$scope.showMe_error = false;
+      //$scope.showMe_success = true;
     },
     function(response) {
       console.error(response);
-      $scope.showMe_error = true;
-      $scope.showMe_success = false;
+      //$scope.showMe_error = true;
+      //$scope.showMe_success = false;
     });
   };
 
   $scope.updateUser = function () {
     $scope.saveInterests();
-    $scope.ocultar_formulario();
     $http({
       url: '/users/'+$scope.user.id,
       method: "PUT",
@@ -172,13 +165,13 @@ app.controller('myCtrl', function($scope,$http) {
       data: { "user" : $scope.user}
     }).then(function(response) {
       console.log(response.data);
-      $scope.showMe_error = false;
-      $scope.showMe_success = true;
+      //$scope.showMe_error = false;
+      //$scope.showMe_success = true;
     },
     function(response) {
       console.error(response);
-      $scope.showMe_error = true;
-      $scope.showMe_success = false;
+      //$scope.showMe_error = true;
+      //$scope.showMe_success = false;
     });
   };
 

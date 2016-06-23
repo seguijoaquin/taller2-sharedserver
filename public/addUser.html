@@ -61,7 +61,7 @@
     <div class="container" ng-app="myApp" ng-controller="myCtrl" ng-init="init_addUser()">
 
       <h1>Alta de usuario</h1>
-      <form class="" action="" ng-show="mostrar_formulario">
+      <form class="" action="">
 
         <div class="form-group">
           <label for="nombre">Nombre:</label>
@@ -121,13 +121,6 @@
         <br><br>
         <div class="clearfix"></div>
       </form>
-      
-      <div class="container" ng-show="showMe_success">
-        <p class="bg-success">Usuario agregado.</p>
-      </div>
-      <div class="container" ng-show="showMe_error">
-        <p class="bg-danger">Error al agregar usuario.</p>
-      </div>
 
       {{user}}
       <br>
