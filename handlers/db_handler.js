@@ -7,7 +7,7 @@ var urlDB = C.POSTGRE_URL_DB;
 
 pg.defaults.ssl = true;
 
-var db_handler = {}
+var db_handler = {};
 
 db_handler.atenderQuery = function (req, res, next) {
   pg.connect(urlDB,function(err,client, done) {
@@ -27,6 +27,7 @@ db_handler.atenderQuery = function (req, res, next) {
 function getValidCategories (interests,client,done,valid_categories,cb) {
   var checked = 0;
   for (var i = 0; i<interests.length;++i) {
+    /* jshint -W083 */
     client.query(C.QUERY_GET_ONE_CATEGORY,[interests[i].category], function(err,result){
       if (err) return sendError({"success" : false, "error" : err, "description" : "Error al obtener categorias\n"},res,done,C.STATUS_ERROR);
 
@@ -156,11 +157,11 @@ db_handler.getCategories = function (req,res,param,client,done) {
       return res.json(respuesta).end();
     });
   });
-}
+};
 
 db_handler.addCategory = function (req,res,param,client,done) {
   //TODO: Alta de categorias
-}
+};
 
 db_handler.getInterests = function (req, res, param, client, done) {
   var query = client.query(C.QUERY_GET_INTERESTS,function(err, result) {
@@ -173,7 +174,7 @@ db_handler.getInterests = function (req, res, param, client, done) {
       });
     });
   });
-}
+};
 
 db_handler.addInterest = function (req, res, param, client, done) {
   var category = req.body.interest.category.toLowerCase();
@@ -187,7 +188,7 @@ db_handler.addInterest = function (req, res, param, client, done) {
   } else {
     return sendError(C.ERROR_INVALID_CATEGORY,res,done,C.STATUS_ERROR);
   }
-}
+};
 
 db_handler.addUser = function(req, res, param, client, done) {
   //TODO: Descomentar para validar unicidad de emails en alta
@@ -212,7 +213,7 @@ db_handler.addUser = function(req, res, param, client, done) {
       });
     });
   });
-}
+};
 
 db_handler.getUsers = function (req, res, param, client, done) {
   var query = client.query(C.QUERY_GET_USERS,function(err, result) {
@@ -234,7 +235,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
       usuario_nuevo.user.sex = row.sex;
       usuario_nuevo.user.age = row.age;
       usuario_nuevo.user.photo_profile = "https://t2shared.herokuapp.com/users/"+id_control+"/photo";
-      if(row.category != null) {
+      if(row.category !== null) {
         usuario_nuevo.user.interests.push({category:row.category,value:row.value});
       }
       usuario_nuevo.user.location.latitude = row.latitude;
@@ -242,7 +243,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
       lista_usuarios.users.push(usuario_nuevo);
       lista_usuarios.metadata.count++;
     } else
-      if (row.category != null) {
+      if (row.category !== null) {
         usuario_nuevo.user.interests.push({category:row.category,value:row.value});
       }
   });
@@ -251,7 +252,7 @@ db_handler.getUsers = function (req, res, param, client, done) {
     done();
     res.json(lista_usuarios).end();
   });
-}
+};
 
 function updateUser (req,res,client,done,usrID,cb) {
   var photo_profile = req.body.photo_profile;
@@ -302,7 +303,7 @@ db_handler.modifyUser = function(req, res, usrID, client, done) {
       devolverUser(req,res,usrID,done,valid_interests,C.STATUS_SUCCESS);
     });
   });
-}
+};
 
 
 db_handler.getUser = function (req, res, usrID, client, done) {
@@ -335,20 +336,20 @@ db_handler.getUser = function (req, res, usrID, client, done) {
     });
   });
 
-}
+};
 
 db_handler.deleteUser = function (req, res, usrID, client, done) {
   var query = client.query(C.QUERY_DELETE_USER,[usrID],function (err, result) {
     queryExitosa(err,result,res, done);
   });
-}
+};
 
 db_handler.updatePhoto = function (req, res, usrID, client, done) {
   var photo = req.body.photo;
   var query = client.query(C.QUERY_UPDATE_PHOTO_PROFILE,[photo,usrID], function (err, result) {
     queryExitosa(err,result,res,done);
   });
-}
+};
 
 function hayResultado (result) {
     return (result.rowCount > 0);

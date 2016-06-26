@@ -13,8 +13,8 @@ function cb_handler(req, res, param, next) {
    * a la base de datos, por lo que no tenemos el cliente seteado todavía
    * ni la funcion done
   */
-  var my_client = undefined;
-  var my_done = undefined;
+  var my_client;
+  var my_done;
 
   /*
    * Se llama inmediatamente despues de que se hace un connect con la DB
@@ -45,7 +45,7 @@ function cb_handler(req, res, param, next) {
     done: my_done,
     set_ClientDone: set_ClientDone,
     launch: launch
-  }
+  };
 }
 
 module.exports = cb_handler;
