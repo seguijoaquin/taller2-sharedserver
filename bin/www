@@ -59,6 +59,7 @@ function onError(error) {
   }
 
   var bind = typeof port === 'string'
+    /* jshint -W014 */
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -84,6 +85,7 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
+    /* jshint -W014 */
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);

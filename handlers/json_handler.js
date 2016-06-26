@@ -1,6 +1,6 @@
 var C = require('../constants/constants.js');
 
-var json_handler = {}
+var json_handler = {};
 
 /*
  * Recibo el resultado de una query sobre la tabla users
@@ -9,24 +9,24 @@ var json_handler = {}
  * segun la especificacion de la API
  */
 json_handler.armarJsonListaIntereses = function(result,cb) {
-  var jsonObject = { "interests" : [] , metadata : { version : C.METADATA_VERSION , count : result.rowCount}}
+  var jsonObject = { "interests" : [] , metadata : { version : C.METADATA_VERSION , count : result.rowCount}};
   for (var i = 0; i < result.rowCount; i++) {
     var oneInterest = {
       category : result.rows[i].category,
       value : result.rows[i].value
-    }
+    };
     jsonObject.interests.push(oneInterest);
   }
   cb(jsonObject);
-}
+};
 
 json_handler.armarJsonListaCategorias = function(result,cb) {
-  var lista_categorias = { "categories" : [], metadata : {version: C.METADATA_VERSION, count : result.rowCount}}
+  var lista_categorias = { "categories" : [], metadata : {version: C.METADATA_VERSION, count : result.rowCount}};
   for (var i = 0; i < result.rowCount; i++) {
     lista_categorias.categories.push(result.rows[i].category);
   }
   cb(lista_categorias);
-}
+};
 
 /*
  * Una vez que se da de alta un usuario nuevo, necesito devolver
@@ -47,7 +47,7 @@ json_handler.armarJsonUsuarioNuevo = function(req,id_user,valid_interests,cb) {
     usuario.user.location.longitude = req.body.user.location.longitude;
     cb(usuario);
   });
-}
+};
 
 json_handler.armarUsuarioVacio = function (cb) {
   var usuario = {
@@ -68,7 +68,7 @@ json_handler.armarUsuarioVacio = function (cb) {
       }
   };
   cb(usuario);
-}
+};
 
 
 module.exports = json_handler;
