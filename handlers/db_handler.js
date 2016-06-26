@@ -46,7 +46,7 @@ function processInterests(valid_interests,cb) {
 
 function createInterest(res,client,done,category,value,cb) {
   var query = client.query(C.QUERY_CREATE_INTEREST,[category,value],function(err,result){
-    if (err) cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
+    if (err) return cb("no_id_interest","No se puede crear el interes: "+category+" - "+value);
 
     cb(result.rows[0].id_interest,err);
   });
