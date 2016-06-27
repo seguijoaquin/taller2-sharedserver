@@ -88,7 +88,7 @@
                   <th class="text-center">Foto de perfil</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 <tr ng-repeat="x in user">
                   <td class="text-center" style="vertical-align:middle">{{ x.id }}</td>
                   <td class="text-center" style="vertical-align:middle">{{ x.name }}</td>
@@ -96,7 +96,9 @@
                   <td class="text-center" style="vertical-align:middle">{{ x.alias }}</td>
                   <td class="text-center" style="vertical-align:middle">{{ x.age }}</td>
                   <td class="text-center" style="vertical-align:middle">{{ x.sex }}</td>
-                  <td class="text-center" style="vertical-align:middle">{{ x.interests}}</td>
+                  <td class="text-center" style="vertical-align:middle"><ul ng-repeat="i in x.interests">
+                    <li>{{i.category}} - {{ i.value }}</li>
+                  </ul></td>
                   <td class="text-center" style="vertical-align:middle"> <img class="img-thumbnail img-responsive" src="data:image/png;base64,{{ x.photo_profile }}" alt="no_photo" style="width:200px; height:auto;"></td>
                 </tr>
               </tbody>
