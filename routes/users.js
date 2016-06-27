@@ -16,6 +16,10 @@ function validarUsuario(req) {
   return (u.name && email && u.alias && u.interests && (u.sex === 'male' || u.sex === 'female') && edad && u.location.longitude && u.location.latitude);
 }
 
+function validarFoto(req) {
+  return validator.isBase64(req.body.user.photo);
+}
+
 function sendError(err,res,status) {
   console.log(err);
   return res.status(status).json({succes: false, error: err, status: status }).end();
@@ -59,8 +63,12 @@ router.put('/[0-9]+',function(req, res) {
 router.put('/[0-9]+/photo',function(req, res) {
   var usrID = req.url.match('[0-9]+');
   usrID = usrID[0];
-  var my_cb_handler = cb_handler(req,res,usrID,db_handler.updatePhoto);
-  db_handler.atenderQuery(req,res,my_cb_handler);
+  if (validarFoto(req)) {
+    var my_cb_handler = cb_handler(req,res,usrID,db_handler.updatePhoto);
+    db_handler.atenderQuery(req,res,my_cb_handler);
+  } else {
+    return sendError(Constants.ERROR_MSG_INVALID_PHOTO,res,500);
+  }
 });
 
 //Obtener foto de perfil

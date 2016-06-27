@@ -22,6 +22,8 @@ module.exports = Object.freeze({
 
     ERROR_INVALID_CATEGORY : "[ERROR : La categoria no puede ser nula]",
 
+    ERROR_MSG_INVALID_PHOTO: "[ERROR : La foto no es Base64]",
+
     ERROR_UPDATE_INTERESTS : "[ERROR : Hubo un error al modificar los intereses del usuario]",
     // ---------------------------- STATUS ----------------------------------------
 
