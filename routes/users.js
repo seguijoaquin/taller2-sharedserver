@@ -4,10 +4,16 @@ var Constants = require('../constants/constants.js');
 var cb_handler = require('../handlers/cb_handler.js');
 var db_handler = require('../handlers/db_handler.js');
 
+var validator = require('validator');
+
 
 function validarUsuario(req) {
   var u = req.body.user;
-  return (u.name && u.email && u.alias && u.interests && (u.sex === 'male' || u.sex === 'female') && u.age && u.location.longitude && u.location.latitude);
+  var edad = false;
+  var email = false;
+  if (u.age) edad = ((u.age >= 16) && (u.age <= 99));
+  if (u.email) email = validator.isEmail(u.email);
+  return (u.name && email && u.alias && u.interests && (u.sex === 'male' || u.sex === 'female') && edad && u.location.longitude && u.location.latitude);
 }
 
 function sendError(err,res,status) {
