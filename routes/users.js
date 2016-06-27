@@ -7,13 +7,12 @@ var db_handler = require('../handlers/db_handler.js');
 
 function validarUsuario(req) {
   var u = req.body.user;
-  //TODO: Validar formato de campo sex
-  return (u.name && u.email && u.alias && u.interests && u.sex && u.age && u.location.longitude && u.location.latitude);
+  return (u.name && u.email && u.alias && u.interests && (u.sex === 'male' || u.sex === 'female') && u.age && u.location.longitude && u.location.latitude);
 }
 
 function sendError(err,res,status) {
   console.log(err);
-  return res.json({succes: false, error: err}).status(status).end();
+  return res.status(status).json({succes: false, error: err, status: status }).end();
 }
 
 //Listar usuarios
