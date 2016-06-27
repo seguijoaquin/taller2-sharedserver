@@ -63,6 +63,14 @@ router.put('/[0-9]+/photo',function(req, res) {
   db_handler.atenderQuery(req,res,my_cb_handler);
 });
 
+//Obtener foto de perfil
+router.get('/[0-9]+/photo',function(req, res) {
+  var usrID = req.url.match('[0-9]+');
+  usrID = usrID[0];
+  var my_cb_handler = cb_handler(req,res,usrID,db_handler.getPhoto);
+  db_handler.atenderQuery(req,res,my_cb_handler);
+});
+
 //Baja de usuario.
 router.delete('/[0-9]+',function(req, res) {
   //TODO: Chequear si existe el usuario??

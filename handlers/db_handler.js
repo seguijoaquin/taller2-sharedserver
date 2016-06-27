@@ -351,6 +351,19 @@ db_handler.updatePhoto = function (req, res, usrID, client, done) {
   });
 };
 
+db_handler.getPhoto = function (req, res, usrID, client, done) {
+  var query = client.query(C.QUERY_GET_ONE_USER_PHOTO,[usrID],function (err,result) {
+    done();
+    if (err) return sendError(err,res,done,C.STATUS_ERROR);
+    if (!hayResultado(result)) return sendError(C.USER_NOT_FOUND,res,done,C.STATUS_NOT_FOUND); //User not found
+  });
+
+  query.on('end',function(result) {
+    if (hayResultado(result)) res.json(result.rows[0].photo_profile).end();
+  });
+};
+
+
 function hayResultado (result) {
     return (result.rowCount > 0);
 }

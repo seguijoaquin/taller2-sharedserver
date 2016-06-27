@@ -63,6 +63,9 @@ module.exports = Object.freeze({
 
     QUERY_DELETE_USERS_INTERESTS : "DELETE FROM users_interests WHERE id_user=($1)",
 
+    QUERY_GET_ONE_USER_PHOTO: "SELECT users.photo_profile FROM users WHERE users.id_user = ($1)",
+
+
 
     //----------------------------- DIRECTORIOS DEL SERVER - USERS -----------------------------
 
