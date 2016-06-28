@@ -11,7 +11,8 @@
   <script src="js/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/angular.min.js"></script>
-  <script src="js/my_controller.js"></script>
+  <script src="js/my_photo_controller.js"></script>
+  <script type="text/javascript" src="js/angular-base64-upload.js"></script>
 
 </head>
 <body>
@@ -59,7 +60,7 @@
     </header>
 
   <div class="container">
-    <div ng-app="myApp" ng-controller="myCtrl">
+    <div ng-app="my_photo_App" ng-controller="my_photo_controller">
       <h1>Actualizar foto de perfil</h1>
       <form class="" action="">
         <div class="form-group">
@@ -70,13 +71,8 @@
 
         <div class="form-group">
           <label for="archivo">Foto:</label>
-          <input type="file" id="archivo" ng-model="photo_file" disabled>
+          <input type="file" id="archivo" ng-model="photo" base-sixty-four-input>
           <p class="help-block">Maximo 30MB</p>
-        </div>
-
-        <div class="form-group">
-          <label for="photo">Foto (base64):</label>
-          <textarea class="form-control" id="photo" type="text" placeholder="no_photo" ng-model="photo" required></textarea>
         </div>
 
         <button class="btn btn-primary" ng-click="updatePhoto()">Enviar</button>
