@@ -121,9 +121,9 @@ function checkInterests(req, res, client, done, cb) {
 
 function saveUser(req,res,client,done,cb) {
   var photo_profile = "no_photo";
-  var name = req.body.user.name.toLowerCase();
+  var name = req.body.user.name;
   var email = req.body.user.email.toLowerCase();
-  var alias = req.body.user.alias.toLowerCase();
+  var alias = req.body.user.alias;
   var sex = req.body.user.sex.toLowerCase();
   var age = req.body.user.age;
   var latitude = req.body.user.location.latitude;
@@ -256,9 +256,9 @@ db_handler.getUsers = function (req, res, param, client, done) {
 
 function updateUser (req,res,client,done,usrID,cb) {
   var photo_profile = req.body.photo_profile;
-  var name = req.body.user.name.toLowerCase();
+  var name = req.body.user.name;
   var email = req.body.user.email.toLowerCase();
-  var alias = req.body.user.alias.toLowerCase();
+  var alias = req.body.user.alias;
   var sex = req.body.user.sex.toLowerCase();
   var age = req.body.user.age;
   var latitude = req.body.user.location.latitude;
