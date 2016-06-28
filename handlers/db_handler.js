@@ -359,7 +359,16 @@ db_handler.getPhoto = function (req, res, usrID, client, done) {
   });
 
   query.on('end',function(result) {
-    if (hayResultado(result)) res.json(result.rows[0].photo_profile).end();
+    if (hayResultado(result)) {
+      var img = new Buffer(result.rows[0].photo_profile, 'base64');
+
+      res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': img.length
+      });
+      res.end(img);
+    }
+    //res.json(result.rows[0].photo_profile).end();
   });
 };
 
