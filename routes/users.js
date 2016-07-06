@@ -17,7 +17,8 @@ function validarUsuario(req) {
 }
 
 function validarFoto(req) {
-  return validator.isBase64(req.body.photo);
+  //return validator.isBase64(req.body.photo);
+  return true;
 }
 
 function sendError(err,res,status) {
